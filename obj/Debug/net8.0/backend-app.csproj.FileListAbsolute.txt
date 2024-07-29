@@ -147,3 +147,10 @@
 /Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/FluentValidation.dll
 /Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/FluentValidation.AspNetCore.dll
 /Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/FluentValidation.DependencyInjectionExtensions.dll
+/Users/user/Desktop/school-project/backend-app/obj/Debug/net8.0/backend-app.sourcelink.json
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/Azure.Storage.Blobs.dll
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/Azure.Storage.Common.dll
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/System.ClientModel.dll
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/System.IO.Hashing.dll
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/AutoMapper.dll
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll

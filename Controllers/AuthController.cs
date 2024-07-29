@@ -1,11 +1,10 @@
-using System.Threading.Tasks;
 using backend_app.Service;
 using BackendApp.Models;
 using BackendApp.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace backend_app.Controllers
+namespace BackendApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

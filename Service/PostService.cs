@@ -13,9 +13,22 @@ namespace BackendApp.Services
             _context = context;
         }
 
-        public async Task<List<PostModel>> GetPostsAsync()
+        public async Task<PagedResult<PostModel>> GetPostsAsync( int page, int pageSize)
         {
-            return await _context.PostModel.ToListAsync();
+            var query = _context.PostModel.AsQueryable();
+            var totalCount = await query.CountAsync();
+            var posts = await query
+                .Skip((page - 1) * pageSize) 
+                .Take(pageSize)
+                .ToListAsync();
+
+            return new PagedResult<PostModel>
+            {
+                Data = posts,
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
         }
 
         public async Task<PostModel> GetPostByIdAsync(int id)
@@ -45,9 +58,21 @@ namespace BackendApp.Services
             }
         }
 
-         private bool PostExists(int id)
+        private bool PostExists(int id)
         {
-            return _context.PostModel.Any(e => e.id == id);
+            return _context.PostModel.Any(e => e.Id == id);
         }
+
+       
     }
+
+public class PagedResult<T>
+{
+    public List<T> Data { get; set; }
+    public int Page { get; set; }
+    public int PageSize { get; set; }
+    public int TotalCount { get; set; }
+    public int TotalPages => (int)Math.Ceiling(TotalCount / (double)PageSize);
+}
+
 }

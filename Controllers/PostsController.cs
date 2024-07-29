@@ -19,9 +19,9 @@ namespace BackendApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<PostModel>>> GetPosts()
+        public async Task<ActionResult<PagedResult<PostModel>>> GetPosts(int page = 1 , int pageSize = 4)
         {
-            var posts = await _postService.GetPostsAsync();
+            var posts = await _postService.GetPostsAsync( page, pageSize);
             return Ok(posts);
         }
 
@@ -37,22 +37,31 @@ namespace BackendApp.Controllers
         }
 
         [HttpPost]
-        [Authorize]
-        public async Task<ActionResult> CreatePost(PostModel post)
+        // [Authorize]
+        public async Task<ActionResult> CreatePost(PostRequest post)
         {
-            var authHeader = Request.Headers["Authorization"].FirstOrDefault();
-            var token = authHeader.Substring("Bearer ".Length).Trim();
-            var principal = _tokenService.ValidateToken(token);
-            var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            post.TeacherId = int.Parse(userId);
-            await _postService.CreatePostAsync(post);
-            return CreatedAtAction(nameof(GetPost), new { id = post.id }, post);
+            // var userEmail = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var newPost = new PostModel
+            {
+                Title = post.Title,
+                Content = post.Content,
+                Code = post.Code,
+                ImgUrl = post.ImgUrl,
+                VideoUrl = post.VideoUrl,
+                Status = post.Status,
+                TestId = post.TestId,
+                CategoryId = post.CategoryId,
+                LocationId = post.LocationId,
+                TeacherId = post.TeacherId,
+            };
+            await _postService.CreatePostAsync(newPost);
+            return Ok(newPost);
         }
 
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdatePost(int id, PostModel post)
         {
-            if (id != post.id)
+            if (id != post.Id)
             {
                 return BadRequest();
             }
@@ -67,5 +76,27 @@ namespace BackendApp.Controllers
             return NoContent();
         }
     }
+
+  public class PostRequest{
+        public string Title { get; set; } = null;
+
+        public string Content { get; set; } = null;
+
+        public string ImgUrl { get; set; }
+
+        public string? VideoUrl { get; set; }
+
+        public string? Code { get; set; }
+
+        public string? Status { get; set; }
+
+        public int? TestId { get; set; }
+
+        public int? CategoryId { get; set; }
+
+        public int? LocationId { get; set; }
+
+        public int? TeacherId { get; set; }
+   }
 
 }

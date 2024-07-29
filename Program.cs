@@ -7,9 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using BackendApp.Models;
 using backend_app.Service;
-
-
-
+using BackendApp.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +42,7 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<PostService>();
 builder.Services.AddScoped<TokenService>();
 builder.Services.AddScoped<UsersService>();
+builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
 builder

@@ -1,6 +1,6 @@
-namespace backend_app.Models
+namespace BackendApp.Models
 {
-    public class TestModel
+     public class TestModel
     {
         public int Id { get; set; }
         public string Question { get; set; }
@@ -9,6 +9,7 @@ namespace backend_app.Models
 
     public class TestOptions
     {
+        public int Id { get; set; }
         public string Option { get; set; }
         public bool IsCorrect { get; set; }
     }

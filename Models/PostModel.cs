@@ -1,38 +1,32 @@
-using BackendApp.Models;
-
 namespace BackendApp.Models
 {
+
     public class PostModel
     {
-        public int id { get; set; }
+        public int Id { get; set; }
 
-        public string title { get; set; } = null;
+        public string Title { get; set; } = null;
 
-        public string content { get; set; } = null;
-
-        public bool Paid { get; set; }
+        public string Content { get; set; } = null;
 
         public string ImgUrl { get; set; }
 
         public string VideoUrl { get; set; }
+       
+         public string? Code { get; set; }
+         
+        public string? Status { get; set; }
 
-        public string Status { get; set; }
-
-        public int? Test { get; set;}
-        public TestMode TestMode { get; set; }
+        public int? TestId { get; set; }
+        public TestModel Test { get; set; }
 
         public int? CategoryId { get; set; }
-        
         public CategoryModel Category { get; set; }
 
         public int? LocationId { get; set; }
-
         public LocationModel Location { get; set; }
 
         public int? TeacherId { get; set; }
-
         public UserModel Teacher { get; set; }
     }
-
- 
 }
