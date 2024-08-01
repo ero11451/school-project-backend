@@ -9,6 +9,8 @@ namespace BackendApp.Controllers
     [ApiController]
     public class FileUploadController : ControllerBase
     {
+         private readonly string _storagePath = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles");
+
         private readonly IFileUploadService _fileUploadService;
 
         public FileUploadController(IFileUploadService fileUploadService)
@@ -40,5 +42,50 @@ namespace BackendApp.Controllers
 
             return StatusCode(StatusCodes.Status500InternalServerError, "Error uploading file.");
         }
+
+        [HttpGet("download/{fileName}")]
+        public async Task<IActionResult> GetFile(string fileName)
+        {
+            var filePath = Path.Combine(_storagePath, fileName);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound("File not found.");
+            }
+
+            var memory = new MemoryStream();
+            using (var stream = new FileStream(filePath, FileMode.Open))
+            {
+                await stream.CopyToAsync(memory);
+            }
+            memory.Position = 0;
+            return File(memory, GetContentType(filePath), fileName);
+        }
+
+        private string GetContentType(string path)
+        {
+            var types = GetMimeTypes();
+            var ext = Path.GetExtension(path).ToLowerInvariant();
+            return types[ext];
+        }
+
+          private Dictionary<string, string> GetMimeTypes()
+        {
+            return new Dictionary<string, string>
+            {
+                { ".txt", "text/plain" },
+                { ".pdf", "application/pdf" },
+                { ".doc", "application/vnd.ms-word" },
+                { ".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+                { ".xls", "application/vnd.ms-excel" },
+                { ".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
+                { ".png", "image/png" },
+                { ".jpg", "image/jpeg" },
+                { ".jpeg", "image/jpeg" },
+                { ".gif", "image/gif" },
+                { ".csv", "text/csv" }
+            };
+        }
+
     }
 }

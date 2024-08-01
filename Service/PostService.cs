@@ -13,10 +13,14 @@ namespace BackendApp.Services
             _context = context;
         }
 
-        public async Task<PagedResult<PostModel>> GetPostsAsync( int page, int pageSize)
+        public async Task<PagedResult<PostModel>> GetPostsAsync( int page, int pageSize, int? categoryId = null)
         {
             var query = _context.PostModel.AsQueryable();
             var totalCount = await query.CountAsync();
+            if (categoryId.HasValue)
+            {
+                query = query.Where(x => x.CategoryId == categoryId);
+            }
             var posts = await query
                 .Skip((page - 1) * pageSize) 
                 .Take(pageSize)

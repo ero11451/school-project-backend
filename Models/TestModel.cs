@@ -7,10 +7,10 @@ namespace BackendApp.Models
         public List<TestOptions> Options { get; set; }
     }
 
-    public class TestOptions
-    {
-        public int Id { get; set; }
-        public string Option { get; set; }
-        public bool IsCorrect { get; set; }
-    }
+    // public class TestOptions
+    // {
+    //     public int Id { get; set; }
+    //     public string Option { get; set; }
+    //     public bool IsCorrect { get; set; }
+    // }
 }

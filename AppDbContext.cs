@@ -13,7 +13,7 @@ namespace BackendApp.Data
         public DbSet<UserModel> UserModel { get; set; }
         public DbSet<CategoryModel> CategoryModel {get ;set;}
         public DbSet<LocationModel> LocationModel {get ;set;}
-        public DbSet<TestOptions> TestOptions {get ;set;}
+        // public DbSet<TestOptions> TestOptions {get ;set;}
         public DbSet<TestModel> QuestionModel {get ;set;}
     }
 }

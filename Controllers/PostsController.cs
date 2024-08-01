@@ -10,8 +10,10 @@ namespace BackendApp.Controllers
     [Route("api/[controller]")]
     public class PostsController : ControllerBase
     {
+        private static List<PostModel> postsModels = new List<PostModel>();
         private readonly PostService _postService;
         private readonly TokenService _tokenService;
+
         public PostsController(PostService postService, TokenService tokenService)
         {
             _postService = postService;
@@ -19,9 +21,13 @@ namespace BackendApp.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<PostModel>>> GetPosts(int page = 1 , int pageSize = 4)
+        public async Task<ActionResult<PagedResult<PostModel>>> GetPosts(
+            int page = 1,
+            int pageSize = 4,
+            int? categoryId = null
+        )
         {
-            var posts = await _postService.GetPostsAsync( page, pageSize);
+            var posts = await _postService.GetPostsAsync(page, pageSize, categoryId);
             return Ok(posts);
         }
 
@@ -40,19 +46,21 @@ namespace BackendApp.Controllers
         // [Authorize]
         public async Task<ActionResult> CreatePost(PostRequest post)
         {
-            // var userEmail = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var newPost = new PostModel
             {
                 Title = post.Title,
                 Content = post.Content,
-                Code = post.Code,
                 ImgUrl = post.ImgUrl,
                 VideoUrl = post.VideoUrl,
+                Code = post.Code,
                 Status = post.Status,
-                TestId = post.TestId,
                 CategoryId = post.CategoryId,
-                LocationId = post.LocationId,
-                TeacherId = post.TeacherId,
+                Question = post.questionText,
+                Options = post.Options?.Select(option => new TestOptions
+                {
+                    Option = option.Option,
+                    IsCorrect = option.IsCorrect
+                }).ToList()
             };
             await _postService.CreatePostAsync(newPost);
             return Ok(newPost);
@@ -77,7 +85,8 @@ namespace BackendApp.Controllers
         }
     }
 
-  public class PostRequest{
+    public class PostRequest
+    {
         public string Title { get; set; } = null;
 
         public string Content { get; set; } = null;
@@ -90,13 +99,23 @@ namespace BackendApp.Controllers
 
         public string? Status { get; set; }
 
-        public int? TestId { get; set; }
+        // // public int? TestId { get; set; }
+        // public PostTest? Test { get; set; }
 
         public int? CategoryId { get; set; }
 
-        public int? LocationId { get; set; }
+        // public int? LocationId { get; set; }
 
-        public int? TeacherId { get; set; }
-   }
+        // public int? TeacherId { get; set; }
 
+        public string? questionText { get; set; }
+
+        public List<TestOptionBody>? Options { get; set; }
+    }
+
+    public class TestOptionBody
+    {
+        public string Option { get; set; }
+        public bool IsCorrect { get; set; }
+    }
 }

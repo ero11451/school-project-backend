@@ -1,6 +1,5 @@
 namespace BackendApp.Models
 {
-
     public class PostModel
     {
         public int Id { get; set; }
@@ -12,13 +11,10 @@ namespace BackendApp.Models
         public string ImgUrl { get; set; }
 
         public string VideoUrl { get; set; }
-       
-         public string? Code { get; set; }
-         
-        public string? Status { get; set; }
 
-        public int? TestId { get; set; }
-        public TestModel Test { get; set; }
+        public string? Code { get; set; }
+
+        public string? Status { get; set; }
 
         public int? CategoryId { get; set; }
         public CategoryModel Category { get; set; }
@@ -28,5 +24,20 @@ namespace BackendApp.Models
 
         public int? TeacherId { get; set; }
         public UserModel Teacher { get; set; }
+
+        public string Question { get; set; }
+        
+        public List<TestOptions> Options { get; set; }
+    }
+
+
+    public class TestOptions
+    {
+        public int id { get; set; }
+        public string Option { get; set; }
+        public bool IsCorrect { get; set; }
     }
 }
+
+
+

@@ -4,6 +4,7 @@ using BackendApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace backend_app.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240730200334_InitialCreaf")]
+    partial class InitialCreaf
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,12 +35,6 @@ namespace backend_app.Migrations
 
                     b.Property<string>("category")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("description")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("imageUrl")
                         .HasColumnType("longtext");
 
                     b.HasKey("id");
@@ -87,14 +84,13 @@ namespace backend_app.Migrations
                     b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Question")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<string>("Status")
                         .HasColumnType("longtext");
 
                     b.Property<int?>("TeacherId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TestId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -112,6 +108,8 @@ namespace backend_app.Migrations
                     b.HasIndex("LocationId");
 
                     b.HasIndex("TeacherId");
+
+                    b.HasIndex("TestId");
 
                     b.ToTable("PostModel");
                 });
@@ -148,15 +146,10 @@ namespace backend_app.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("PostModelId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("TestModelId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PostModelId");
 
                     b.HasIndex("TestModelId");
 
@@ -224,27 +217,24 @@ namespace backend_app.Migrations
                         .WithMany()
                         .HasForeignKey("TeacherId");
 
+                    b.HasOne("BackendApp.Models.TestModel", "Test")
+                        .WithMany()
+                        .HasForeignKey("TestId");
+
                     b.Navigation("Category");
 
                     b.Navigation("Location");
 
                     b.Navigation("Teacher");
+
+                    b.Navigation("Test");
                 });
 
             modelBuilder.Entity("BackendApp.Models.TestOptions", b =>
                 {
-                    b.HasOne("BackendApp.Models.PostModel", null)
-                        .WithMany("Options")
-                        .HasForeignKey("PostModelId");
-
                     b.HasOne("BackendApp.Models.TestModel", null)
                         .WithMany("Options")
                         .HasForeignKey("TestModelId");
-                });
-
-            modelBuilder.Entity("BackendApp.Models.PostModel", b =>
-                {
-                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("BackendApp.Models.TestModel", b =>
