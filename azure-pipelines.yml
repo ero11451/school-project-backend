@@ -32,9 +32,3 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(build.artifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
