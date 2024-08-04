@@ -21,10 +21,13 @@ namespace BackendApp.Services
             {
                 query = query.Where(x => x.CategoryId == categoryId);
             }
-            var posts = await query
-                .Skip((page - 1) * pageSize) 
+            var posts = await  query
+                .Include(p => p.Category)
+                .Include(p => p.Options)
+                .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
+
 
             return new PagedResult<PostModel>
             {
@@ -37,7 +40,7 @@ namespace BackendApp.Services
 
         public async Task<PostModel> GetPostByIdAsync(int id)
         {
-            return await _context.PostModel.FindAsync(id);
+            return await _context.PostModel .Include(p => p.Options) .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task CreatePostAsync(PostModel post)
