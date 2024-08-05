@@ -9,6 +9,7 @@ namespace  BackendApp.Models
         public int id { get; set; }
         [Required]
         public string category {get;set;} = null;
+        
         public string ?description {get;set;}
 
         public string? imageUrl {get;set;}
