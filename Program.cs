@@ -31,10 +31,12 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
-        $"Server=localhost;Database=schoolProject;User=root;Password={""};",
-        new MySqlServerVersion(new Version(8, 0, 26))
+        $"Server=tcp:neebooh-school-project-ap-server.database.windows.net,1433;Initial Catalog=school-project-neeboh-api-server;Persist Security Info=False;User ID=admin_user_muyi;Password=fedgac11451;",
+        new MySqlServerVersion(new Version(8, 0, 26)),
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure()
     )
 );
+
 
 builder.Services.AddScoped<IPasswordHasher<UserModel>, PasswordHasher<UserModel>>();
 
@@ -74,6 +76,7 @@ if (app.Environment.IsDevelopment())
         c.RoutePrefix = string.Empty;
     });
 }
+
 
 app.UseCors("CorsPolicy");
 
