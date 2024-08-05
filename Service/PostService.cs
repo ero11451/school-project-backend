@@ -40,7 +40,9 @@ namespace BackendApp.Services
 
         public async Task<PostModel> GetPostByIdAsync(int id)
         {
-            return await _context.PostModel .Include(p => p.Options) .FirstOrDefaultAsync(p => p.Id == id);
+            return await _context.PostModel
+                     .Include(p => p.Options) 
+                     .FirstOrDefaultAsync(p => p.Id == id);
         }
 
         public async Task CreatePostAsync(PostModel post)

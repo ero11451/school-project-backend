@@ -1,7 +1,5 @@
-using System.Security.Claims;
 using BackendApp.Models;
 using BackendApp.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackendApp.Controllers
@@ -56,7 +54,7 @@ namespace BackendApp.Controllers
                 Status = post.Status,
                 CategoryId = post.CategoryId,
                 Question = post.questionText,
-                Options = post.Options?.Select(option => new TestOptions
+                Options = post.Options.Select(option => new TestOptions
                 {
                     Option = option.Option,
                     IsCorrect = option.IsCorrect
@@ -88,29 +86,24 @@ namespace BackendApp.Controllers
     public class PostRequest
     {
         public string Title { get; set; } = null;
-
         public string Content { get; set; } = null;
-
         public string ImgUrl { get; set; }
-
         public string? VideoUrl { get; set; }
-
         public string? Code { get; set; }
-
         public string? Status { get; set; }
+        public string? questionText { get; set; }
+        public List<TestOptionBody>? Options { get; set; } 
+        public int? CategoryId { get; set; }
 
         // // public int? TestId { get; set; }
         // public PostTest? Test { get; set; }
 
-        public int? CategoryId { get; set; }
+
 
         // public int? LocationId { get; set; }
 
         // public int? TeacherId { get; set; }
 
-        public string? questionText { get; set; }
-
-        public List<TestOptionBody>? Options { get; set; }
     }
 
     public class TestOptionBody
