@@ -81,14 +81,12 @@ namespace backend_app.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("ImgUrl")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
                     b.Property<string>("Question")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Status")
@@ -102,7 +100,6 @@ namespace backend_app.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("VideoUrl")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -135,11 +132,11 @@ namespace backend_app.Migrations
 
             modelBuilder.Entity("BackendApp.Models.TestOptions", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("id"));
 
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("tinyint(1)");
@@ -154,7 +151,7 @@ namespace backend_app.Migrations
                     b.Property<int?>("TestModelId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("id");
 
                     b.HasIndex("PostModelId");
 

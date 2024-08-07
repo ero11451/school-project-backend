@@ -71,7 +71,7 @@ namespace BackendApp.Controllers
 
     public class LoginBody
     {
-        public string email { get; set; }
-        public string password { get; set; }
+        public string email { get; set; } = null;
+        public string password { get; set; } = null;
     }
 }

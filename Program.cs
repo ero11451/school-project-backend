@@ -28,10 +28,11 @@ builder.Services.AddCors(options =>
         }
     );
 });
+// this 
+System.Console.WriteLine("this is from the console");
 
 
-
-var connectionString = "Server=neebohdbserver.database.windows.net;Port=3306;Database=neebohdatabase;User=admin_user_main;Password=fedgac11451...;SslMode=Preferred;";
+var connectionString = "Server=schooldb.mysql.database.azure.com;User=admin_user_muyi;Password=fedgac11451...;Database=neebohdb;";
 
 // Configure DbContext with MySQL
 builder.Services.AddDbContext<AppDbContext>(options => 
@@ -39,7 +40,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         connectionString,
         new MySqlServerVersion(new Version(8, 0, 26)),
         mySqlOptions => mySqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5,
+            maxRetryCount: 2,
             maxRetryDelay: TimeSpan.FromSeconds(30),
             errorNumbersToAdd: null
         )

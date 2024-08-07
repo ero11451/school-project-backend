@@ -8,9 +8,9 @@ namespace BackendApp.Models
 
         public string Content { get; set; } = null;
 
-        public string ImgUrl { get; set; }
+        public string? ImgUrl { get; set; }
 
-        public string VideoUrl { get; set; }
+        public string? VideoUrl { get; set; }
 
         public string? Code { get; set; }
 
@@ -25,7 +25,7 @@ namespace BackendApp.Models
         public int? TeacherId { get; set; }
         public UserModel Teacher { get; set; }
 
-        public string Question { get; set; }
+        public string? Question { get; set; }
         
         public List<TestOptions> Options { get; set; }
     }
