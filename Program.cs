@@ -29,13 +29,23 @@ builder.Services.AddCors(options =>
     );
 });
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+
+
+var connectionString = "Server=neebohdbserver.database.windows.net;Port=3306;Database=neebohdatabase;User=admin_user_main;Password=fedgac11451...;SslMode=Preferred;";
+
+// Configure DbContext with MySQL
+builder.Services.AddDbContext<AppDbContext>(options => 
     options.UseMySql(
-        $"Server=tcp:neebooh-school-project-ap-server.database.windows.net,1433;Initial Catalog=school-project-neeboh-api-server;Persist Security Info=False;User ID=admin_user_muyi;Password=fedgac11451;",
+        connectionString,
         new MySqlServerVersion(new Version(8, 0, 26)),
-        mySqlOptions => mySqlOptions.EnableRetryOnFailure()
+        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null
+        )
     )
 );
+
 
 
 builder.Services.AddScoped<IPasswordHasher<UserModel>, PasswordHasher<UserModel>>();
@@ -77,7 +87,6 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
 app.UseCors("CorsPolicy");
 
 app.UseHttpsRedirection();
@@ -89,4 +98,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-// testing
