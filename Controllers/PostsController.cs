@@ -53,7 +53,7 @@ namespace BackendApp.Controllers
                 Code = post.Code,
                 Status = post.Status,
                 CategoryId = post.CategoryId,
-                Question = post.questionText,
+                // Question = post.questionText,
                 Options = post.Options.Select(option => new TestOptions
                 {
                     Option = option.Option,

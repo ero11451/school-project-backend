@@ -55,7 +55,7 @@ namespace BackendApp.Controllers
             {
                 Email = register.email,
                 Password = hashPassword,
-                Username = register.username
+                user_name = register.username
             };
             await _usersService.CreateAsync(newUser);
             return Ok();

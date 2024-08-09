@@ -1,9 +1,6 @@
-using System.Text;
 using BackendApp.Data;
 using BackendApp.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using BackendApp.Models;
 using backend_app.Service;
@@ -29,15 +26,13 @@ builder.Services.AddCors(options =>
     );
 });
 // this 
-System.Console.WriteLine("this is from the console");
-
-
-var connectionString = "Server=schooldb.mysql.database.azure.com;User=admin_user_muyi;Password=fedgac11451...;Database=neebohdb;";
-
+// var connectionString = "Server=schooldb.mysql.database.azure.com;User=admin_user_muyi;Password=fedgac11451...;Database=neebohdb;";
 // Configure DbContext with MySQL
+// Console.Write(builder.Configuration["DBConnectionStrings:Connection"]);
+
 builder.Services.AddDbContext<AppDbContext>(options => 
     options.UseMySql(
-        connectionString,
+        builder.Configuration["DBConnectionStrings:Connection"],
         new MySqlServerVersion(new Version(8, 0, 26)),
         mySqlOptions => mySqlOptions.EnableRetryOnFailure(
             maxRetryCount: 2,
@@ -46,8 +41,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         )
     )
 );
-
-
 
 builder.Services.AddScoped<IPasswordHasher<UserModel>, PasswordHasher<UserModel>>();
 
@@ -58,23 +51,13 @@ builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
-builder
-    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
-            )
-        };
-    });
+builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
+builder.Services.AddAuthorizationBuilder();
+
+builder.Services.AddIdentity<UserModel, IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders()
+    .AddApiEndpoints();
 
 var app = builder.Build();
 
@@ -89,6 +72,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("CorsPolicy");
+app.MapIdentityApi<UserModel>();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -99,3 +83,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+

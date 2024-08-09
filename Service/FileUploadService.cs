@@ -3,53 +3,36 @@ using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Azure.Storage.Blobs;
+using Microsoft.Extensions.Configuration;
 
 namespace BackendApp.Services
 {
     public class FileUploadService : IFileUploadService
     {
         private readonly string _storagePath;
+        private readonly BlobServiceClient _blobServiceClient;
+        string connectionString =  "DefaultEndpointsProtocol=https;AccountName=neebohfileserver;AccountKey=axzh/PegUgO5r0l4bOhOt2z6O8cnrvGWTTMpzJQK/JQNOWsD93i3eXVMegobhZu+PRuZB+Ze4DRT+AStW5Og7w==;EndpointSuffix=core.windows.net";
 
-        public FileUploadService(IWebHostEnvironment env)
+
+        public FileUploadService(IConfiguration configuration)
         {
-            if (env == null)
-            {
-                throw new ArgumentNullException(nameof(env), "WebHostEnvironment cannot be null");
-            }
-
-            _storagePath = Path.Combine(env.ContentRootPath ?? throw new ArgumentNullException(nameof(env.ContentRootPath)), "uploads");
-            if (!Directory.Exists(_storagePath))
-            {
-                Directory.CreateDirectory(_storagePath);
-            }
+                _blobServiceClient = new BlobServiceClient(connectionString);
         }
 
-        public async Task<string> UploadFileAsync(IFormFile file)
+            public async Task<string> UploadFile(Stream fileStream, string fileName, string containerName)
         {
-            if (file == null)
-            {
-                throw new ArgumentNullException(nameof(file), "File cannot be null");
-            }
+            var blobContainerClient = _blobServiceClient.GetBlobContainerClient(containerName);
+            var blobClient = blobContainerClient.GetBlobClient(fileName);
 
-            if (file.Length > 0)
-            {
-                var filePath = Path.Combine(_storagePath, file.FileName);
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-                return filePath;
-            }
+            await blobClient.UploadAsync(fileStream, overwrite: true);
 
-            return null;
+            return blobClient.Uri.ToString();
+        }
         }
 
-
-
-    }
-
-    public interface IFileUploadService
-    {
-        Task<string>  UploadFileAsync(IFormFile file);
-    }
+        public interface IFileUploadService
+        {
+            Task<string> UploadFile(Stream fileStream, string fileName, string containerName);
+        }
 }

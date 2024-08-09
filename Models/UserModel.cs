@@ -1,17 +1,17 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Identity;
 
 namespace BackendApp.Models
 {
-    public class UserModel
+    public class UserModel : IdentityUser
   {
-    [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    public int id { get; set; }
+    public int Id { get; set; }
+
 
     [Required]
     // [StringLength(50)]
-    public string? Username { get; set; } = null;
+    public string? user_name { get; set; } = null;
 
 
     [Required]
