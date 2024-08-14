@@ -1,10 +1,15 @@
+using System.Text;
 using BackendApp.Data;
 using BackendApp.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using BackendApp.Models;
 using backend_app.Service;
 using BackendApp.Service;
+using WebPWrecover.Services;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,11 +30,8 @@ builder.Services.AddCors(options =>
         }
     );
 });
-// this 
-// var connectionString = "Server=schooldb.mysql.database.azure.com;User=admin_user_muyi;Password=fedgac11451...;Database=neebohdb;";
-// Configure DbContext with MySQL
-// Console.Write(builder.Configuration["DBConnectionStrings:Connection"]);
 
+// Configure DbContext with MySQL
 builder.Services.AddDbContext<AppDbContext>(options => 
     options.UseMySql(
         builder.Configuration["DBConnectionStrings:Connection"],
@@ -51,13 +53,41 @@ builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
-builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
+builder.Services.AddAuthentication(
+    options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}
+
+).AddBearerToken(IdentityConstants.BearerScheme);
 builder.Services.AddAuthorizationBuilder();
 
 builder.Services.AddIdentity<UserModel, IdentityRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders()
     .AddApiEndpoints();
+
+builder
+    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+            )
+        };
+    });
+
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 
 var app = builder.Build();
 
@@ -83,5 +113,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
-

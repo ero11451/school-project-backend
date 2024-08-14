@@ -1,5 +1,6 @@
 using BackendApp.Models;
 using BackendApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BackendApp.Controllers
@@ -29,6 +30,7 @@ namespace BackendApp.Controllers
             return Ok(posts);
         }
 
+        // [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<PostModel>> GetPost(int id)
         {
@@ -53,7 +55,7 @@ namespace BackendApp.Controllers
                 Code = post.Code,
                 Status = post.Status,
                 CategoryId = post.CategoryId,
-                // Question = post.questionText,
+                Question = post.questionText,
                 Options = post.Options.Select(option => new TestOptions
                 {
                     Option = option.Option,
@@ -65,13 +67,30 @@ namespace BackendApp.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdatePost(int id, PostModel post)
+        public async Task<ActionResult> UpdatePost(int id,  PostRequest post)
         {
-            if (id != post.Id)
+            if (id == null)
             {
                 return BadRequest();
             }
-            await _postService.UpdatePostAsync(post);
+             var newPost = new PostModel
+            {
+                Title = post.Title,
+                Content = post.Content,
+                ImgUrl = post.ImgUrl,
+                VideoUrl = post.VideoUrl,
+                Code = post.Code,
+                Status = post.Status,
+                CategoryId = post.CategoryId,
+                Question = post.questionText,
+                Options = post.Options.Select(option => new TestOptions
+                {
+                    Option = option.Option,
+                    IsCorrect = option.IsCorrect
+                }).ToList()
+            };
+            
+            await _postService.UpdatePostAsync(newPost);
             return NoContent();
         }
 
@@ -94,6 +113,8 @@ namespace BackendApp.Controllers
         public string? questionText { get; set; }
         public List<TestOptionBody>? Options { get; set; } 
         public int? CategoryId { get; set; }
+
+        // public string TutorID 
 
         // // public int? TestId { get; set; }
         // public PostTest? Test { get; set; }

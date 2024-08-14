@@ -1,56 +1,136 @@
 using BackendApp.Data;
 using BackendApp.Models;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend_app.Service
 {
-    public class UsersService(AppDbContext context) 
+    public class UsersService
     {
-        private readonly AppDbContext _context = context;
-        public async Task<List<UserModel>> GetAsync()
+        // private readonly TokenService _tokenService;
+        private readonly AppDbContext _context;
+
+        public UsersService(AppDbContext context)
         {
-            return await _context.UserModel.ToListAsync();
+            // _tokenService = tokenService;
+            _context = context;
         }
 
-        public async Task<UserModel> GetByIdAsync(int id)
+        // Get all users
+        public async Task<PagedResult<UserModel>>
+        GetAllUsersAsync(int page, int pageSize)
+        {
+            var query = _context.UserModel.AsQueryable();
+            var totalCount = await query.CountAsync();
+            var users =
+                await query
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+
+            return new PagedResult<UserModel> {
+                Data = users,
+                Page = page,
+                PageSize = pageSize,
+                TotalCount = totalCount
+            };
+        }
+
+        // Get a user by their ID
+        public async Task<UserModel> GetUserByIdAsync(string id)
         {
             return await _context.UserModel.FindAsync(id);
         }
-        public async Task<UserModel> GetByEmailAsync(string email)
-        {
-            return await _context.UserModel.FirstOrDefaultAsync((user) => user.Email == email);
-        }
-   
 
+        // Get a user by their email
+        public async Task<UserModel> GetUserByEmailAsync(string email)
+        {
+            return await _context
+                .UserModel
+                .FirstOrDefaultAsync(user => user.Email == email);
+        }
+
+        // Create a new user
         public async Task CreateAsync(UserModel user)
         {
-            _context.UserModel.Add(user);
+            _context.UserModel.Add (user);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdatePostAsync(UserModel user)
+        // Update an existing user
+        public async Task UpdateUserAsync(UserModel user)
         {
-            _context.UserModel.Update(user);
-            await _context.SaveChangesAsync();
-        }
+            _context.Entry(user).State = EntityState.Modified;
 
-        public async Task DeletePostAsync(int id)
-        {
-            var user = await _context.UserModel.FindAsync(id);
-            if (user != null)
+            try
             {
-                _context.UserModel.Remove(user);
                 await _context.SaveChangesAsync();
             }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!UserExists(user.Id))
+                {
+                    throw new NotFoundException("User not found.");
+                }
+                else
+                {
+                    throw; // Re-throw the exception to be handled at a higher level
+                }
+            }
         }
+
+        // Delete a user by their ID
+        public async Task DeleteUserAsync(string id)
+        {
+            var user = await _context.UserModel.FindAsync(id);
+            if (user == null)
+            {
+                throw new NotFoundException("User not found.");
+            }
+            _context.UserModel.Remove (user);
+            await _context.SaveChangesAsync();
+        }
+
+        // Check if a user exists by email
         public bool UserExists(string email)
         {
             return _context.UserModel.Any(e => e.Email == email);
         }
+
+        internal async Task GetAllUsersAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 
+    [Serializable]
+    internal class NotFoundException : Exception
+    {
+        public NotFoundException()
+        {
+        }
 
-   
+        public NotFoundException(string? message) :
+            base(message)
+        {
+        }
 
+        public NotFoundException(string? message, Exception? innerException) :
+            base(message, innerException)
+        {
+        }
+    }
+
+    public class PagedResult<T>
+    {
+        public List<T> ? Data { get; set; }  = new List<T>();
+
+        public int Page { get; set; }
+
+        public int PageSize { get; set; }
+
+        public int TotalCount { get; set; }
+
+        public int TotalPages =>
+            (int) Math.Ceiling(TotalCount / (double) PageSize);
+    }
 }

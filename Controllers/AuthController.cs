@@ -25,7 +25,7 @@ namespace BackendApp.Controllers
         [HttpPost("login")]
          public async Task<IActionResult> Login([FromBody] LoginBody login)
             {
-                var user = await _usersService.GetByEmailAsync(login.email);
+                var user = await _usersService.GetUserByEmailAsync(login.email);
                 if (user == null)
                 {
                     return Unauthorized();
@@ -45,7 +45,7 @@ namespace BackendApp.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterBody register)
         {
-            var user = await _usersService.GetByEmailAsync(register.email);
+            var user = await _usersService.GetUserByEmailAsync(register.email);
             if (user != null)
             {
                 return BadRequest("User already exists");
