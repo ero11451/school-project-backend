@@ -13,7 +13,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("backend-app")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< HEAD
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+4477258b53f0a4a56765aa715bfe2740b8657028")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b1c7d9b63a68d6c7e8c4fc7c5bc7c43c254822e5")]
+>>>>>>> 4f21209 (added the backapp fix)
 [assembly: System.Reflection.AssemblyProductAttribute("backend-app")]
 [assembly: System.Reflection.AssemblyTitleAttribute("backend-app")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
