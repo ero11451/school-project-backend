@@ -12,8 +12,8 @@ namespace BackendApp.Services
     {
         private readonly string _storagePath;
         private readonly BlobServiceClient _blobServiceClient;
-        string connectionString =  "DefaultEndpointsProtocol=https;AccountName=neebohfileserver;AccountKey=axzh/PegUgO5r0l4bOhOt2z6O8cnrvGWTTMpzJQK/JQNOWsD93i3eXVMegobhZu+PRuZB+Ze4DRT+AStW5Og7w==;EndpointSuffix=core.windows.net";
-
+        string connectionString =  "";
+        
 
         public FileUploadService(IConfiguration configuration)
         {
