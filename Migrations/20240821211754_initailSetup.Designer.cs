@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace backend_app.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240809202445_initailSetup")]
+    [Migration("20240821211754_initailSetup")]
     partial class initailSetup
     {
         /// <inheritdoc />
@@ -95,11 +95,13 @@ namespace backend_app.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Summary")
+                        .HasColumnType("longtext");
+
                     b.Property<int?>("TeacherId")
                         .HasColumnType("int");
 
                     b.Property<string>("TeacherId1")
-                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<string>("Title")
@@ -134,7 +136,7 @@ namespace backend_app.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TestModel");
+                    b.ToTable("QuestionModel");
                 });
 
             modelBuilder.Entity("BackendApp.Models.TestOptions", b =>
@@ -152,7 +154,7 @@ namespace backend_app.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("PostModelId")
+                    b.Property<int>("PostModelId")
                         .HasColumnType("int");
 
                     b.Property<int?>("TestModelId")
@@ -183,14 +185,13 @@ namespace backend_app.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("Gender")
+                    b.Property<int?>("Gender")
                         .HasColumnType("int");
 
                     b.Property<bool>("LockoutEnabled")
@@ -208,14 +209,9 @@ namespace backend_app.Migrations
                         .HasColumnType("varchar(256)");
 
                     b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(355)
-                        .HasColumnType("varchar(355)");
-
-                    b.Property<string>("PasswordHash")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("PasswordSalt")
+                    b.Property<string>("PasswordHash")
                         .HasColumnType("longtext");
 
                     b.Property<string>("PhoneNumber")
@@ -227,7 +223,7 @@ namespace backend_app.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("longtext");
 
-                    b.Property<int>("Status")
+                    b.Property<int?>("Status")
                         .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")
@@ -240,11 +236,10 @@ namespace backend_app.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
-                    b.Property<int>("UserType")
+                    b.Property<int?>("UserType")
                         .HasColumnType("int");
 
                     b.Property<string>("user_name")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
@@ -403,9 +398,7 @@ namespace backend_app.Migrations
 
                     b.HasOne("BackendApp.Models.UserModel", "Teacher")
                         .WithMany()
-                        .HasForeignKey("TeacherId1")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("TeacherId1");
 
                     b.Navigation("Category");
 
@@ -416,13 +409,17 @@ namespace backend_app.Migrations
 
             modelBuilder.Entity("BackendApp.Models.TestOptions", b =>
                 {
-                    b.HasOne("BackendApp.Models.PostModel", null)
+                    b.HasOne("BackendApp.Models.PostModel", "PostModel")
                         .WithMany("Options")
-                        .HasForeignKey("PostModelId");
+                        .HasForeignKey("PostModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BackendApp.Models.TestModel", null)
                         .WithMany("Options")
                         .HasForeignKey("TestModelId");
+
+                    b.Navigation("PostModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

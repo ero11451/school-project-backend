@@ -92,6 +92,9 @@ namespace backend_app.Migrations
                     b.Property<string>("Status")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Summary")
+                        .HasColumnType("longtext");
+
                     b.Property<int?>("TeacherId")
                         .HasColumnType("int");
 
@@ -130,7 +133,7 @@ namespace backend_app.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("TestModel");
+                    b.ToTable("QuestionModel");
                 });
 
             modelBuilder.Entity("BackendApp.Models.TestOptions", b =>
@@ -148,7 +151,7 @@ namespace backend_app.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("PostModelId")
+                    b.Property<int>("PostModelId")
                         .HasColumnType("int");
 
                     b.Property<int?>("TestModelId")
@@ -403,13 +406,17 @@ namespace backend_app.Migrations
 
             modelBuilder.Entity("BackendApp.Models.TestOptions", b =>
                 {
-                    b.HasOne("BackendApp.Models.PostModel", null)
+                    b.HasOne("BackendApp.Models.PostModel", "PostModel")
                         .WithMany("Options")
-                        .HasForeignKey("PostModelId");
+                        .HasForeignKey("PostModelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("BackendApp.Models.TestModel", null)
                         .WithMany("Options")
                         .HasForeignKey("TestModelId");
+
+                    b.Navigation("PostModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

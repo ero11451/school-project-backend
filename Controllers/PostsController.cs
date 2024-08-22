@@ -55,25 +55,27 @@ namespace BackendApp.Controllers
                 Code = post.Code,
                 Status = post.Status,
                 CategoryId = post.CategoryId,
-                Question = post.questionText,
-                Options = post.Options.Select(option => new TestOptions
-                {
-                    Option = option.Option,
-                    IsCorrect = option.IsCorrect
-                }).ToList()
+                Question = post.QuestionText,
+                Options = post
+                    .Options.Select(option => new TestOptions
+                    {
+                        Option = option.Option,
+                        IsCorrect = option.IsCorrect
+                    })
+                    .ToList()
             };
             await _postService.CreatePostAsync(newPost);
             return Ok(newPost);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdatePost(int id,  PostRequest post)
+        public async Task<ActionResult> UpdatePost(int id, PostRequest post)
         {
             if (id == null)
             {
                 return BadRequest();
             }
-             var newPost = new PostModel
+            var newPost = new PostModel
             {
                 Title = post.Title,
                 Content = post.Content,
@@ -82,14 +84,16 @@ namespace BackendApp.Controllers
                 Code = post.Code,
                 Status = post.Status,
                 CategoryId = post.CategoryId,
-                Question = post.questionText,
-                Options = post.Options.Select(option => new TestOptions
-                {
-                    Option = option.Option,
-                    IsCorrect = option.IsCorrect
-                }).ToList()
+                Question = post.QuestionText,
+                Options = post
+                    .Options.Select(option => new TestOptions
+                    {
+                        Option = option.Option,
+                        IsCorrect = option.IsCorrect
+                    })
+                    .ToList()
             };
-            
+
             await _postService.UpdatePostAsync(newPost);
             return NoContent();
         }
@@ -102,34 +106,23 @@ namespace BackendApp.Controllers
         }
     }
 
-    public class PostRequest
-    {
-        public string Title { get; set; } = null;
-        public string Content { get; set; } = null;
-        public string ImgUrl { get; set; }
-        public string? VideoUrl { get; set; }
-        public string? Code { get; set; }
-        public string? Status { get; set; }
-        public string? questionText { get; set; }
-        public List<TestOptionBody>? Options { get; set; } 
-        public int? CategoryId { get; set; }
+  public class PostRequest
+{
+    public string Title { get; set; }
+    public string Content { get; set; }
+    public string? ImgUrl { get; set; }
+    public string? VideoUrl { get; set; }
+    public string? Code { get; set; }
+    public string? Status { get; set; }
+    public int? CategoryId { get; set; }
+    public string? QuestionText { get; set; }
+    public List<TestOptionRequest> Options { get; set; }
+}
 
-        // public string TutorID 
+public class TestOptionRequest
+{
+    public string Option { get; set; }
+    public bool IsCorrect { get; set; }
+}
 
-        // // public int? TestId { get; set; }
-        // public PostTest? Test { get; set; }
-
-
-
-        // public int? LocationId { get; set; }
-
-        // public int? TeacherId { get; set; }
-
-    }
-
-    public class TestOptionBody
-    {
-        public string Option { get; set; }
-        public bool IsCorrect { get; set; }
-    }
 }

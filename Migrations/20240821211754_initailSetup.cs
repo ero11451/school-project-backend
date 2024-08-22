@@ -42,28 +42,26 @@ namespace backend_app.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     user_name = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Password = table.Column<string>(type: "varchar(355)", maxLength: 355, nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: false)
+                    Password = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Bio = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     UserImgUrl = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    Gender = table.Column<int>(type: "int", nullable: false),
-                    UserType = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<int>(type: "int", nullable: false),
-                    PasswordHash = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PasswordSalt = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Gender = table.Column<int>(type: "int", nullable: true),
+                    UserType = table.Column<int>(type: "int", nullable: true),
+                    Status = table.Column<int>(type: "int", nullable: true),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Email = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     NormalizedEmail = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     EmailConfirmed = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    PasswordHash = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     SecurityStamp = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     ConcurrencyStamp = table.Column<string>(type: "longtext", nullable: true)
@@ -117,7 +115,7 @@ namespace backend_app.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "TestModel",
+                name: "QuestionModel",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -127,7 +125,7 @@ namespace backend_app.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TestModel", x => x.Id);
+                    table.PrimaryKey("PK_QuestionModel", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -274,12 +272,14 @@ namespace backend_app.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Code = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    Summary = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     Status = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CategoryId = table.Column<int>(type: "int", nullable: true),
                     LocationId = table.Column<int>(type: "int", nullable: true),
                     TeacherId = table.Column<int>(type: "int", nullable: true),
-                    TeacherId1 = table.Column<string>(type: "varchar(255)", nullable: false)
+                    TeacherId1 = table.Column<string>(type: "varchar(255)", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Question = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4")
@@ -291,8 +291,7 @@ namespace backend_app.Migrations
                         name: "FK_PostModel_AspNetUsers_TeacherId1",
                         column: x => x.TeacherId1,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PostModel_CategoryModel_CategoryId",
                         column: x => x.CategoryId,
@@ -315,7 +314,7 @@ namespace backend_app.Migrations
                     Option = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsCorrect = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    PostModelId = table.Column<int>(type: "int", nullable: true),
+                    PostModelId = table.Column<int>(type: "int", nullable: false),
                     TestModelId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
@@ -325,11 +324,12 @@ namespace backend_app.Migrations
                         name: "FK_TestOptions_PostModel_PostModelId",
                         column: x => x.PostModelId,
                         principalTable: "PostModel",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_TestOptions_TestModel_TestModelId",
+                        name: "FK_TestOptions_QuestionModel_TestModelId",
                         column: x => x.TestModelId,
-                        principalTable: "TestModel",
+                        principalTable: "QuestionModel",
                         principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -425,7 +425,7 @@ namespace backend_app.Migrations
                 name: "PostModel");
 
             migrationBuilder.DropTable(
-                name: "TestModel");
+                name: "QuestionModel");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

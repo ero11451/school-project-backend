@@ -42,6 +42,8 @@ public class CategoryService
         {
             _context.CategoryModel.Remove(data);
             await _context.SaveChangesAsync();
+        }else{
+            throw new Exception("Data not found");
         }
     }
 }

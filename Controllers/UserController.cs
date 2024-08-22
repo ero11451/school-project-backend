@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using backend_app.Service;
+
 using BackendApp.Services;
 
 
@@ -66,13 +66,10 @@ namespace BackendApp.Controllers
 
             // _usersService.
             var userDataToken = _tokenService.ValidateToken(token);
-
-            // De;code the token to get the user claims (optional step)
-            // var handler = new JwtSecurityTokenHandler();
-            // var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
-            // var userId = jsonToken.Claims.First(claim => claim.Type == "sub").Value;
-
-            // Alternatively, you can use the User.Identity claims if authenticated middleware is in place
+            if (userDataToken == null)
+            {
+                return Unauthorized();
+            }
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var email = User.FindFirstValue(ClaimTypes.Email);
             var username = User.Identity.Name;
