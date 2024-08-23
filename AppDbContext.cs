@@ -23,12 +23,12 @@ namespace BackendApp.Data
             base.OnModelCreating(modelBuilder);
 
             // Configure cascading delete for TestOptions when a PostModel is deleted
-            modelBuilder
-                .Entity<PostModel>()
-                .HasMany(p => p.Options)
-                .WithOne(o => o.PostModel)
-                .HasForeignKey(o => o.PostModelId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder
+            //     .Entity<PostModel>()
+            //     .HasMany(p => p.Options)
+            //     .WithOne(o => o.PostModel)
+            //     .HasForeignKey(o => o.PostModelId)
+            //     .OnDelete(DeleteBehavior.Cascade);
 
             // Other model configurations...
         }
