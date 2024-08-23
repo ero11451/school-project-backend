@@ -1,25 +1,22 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Hosting;
-using System;
+using Microsoft.Extensions.Configuration;
+using Azure.Storage.Blobs;
 using System.IO;
 using System.Threading.Tasks;
-using Azure.Storage.Blobs;
-using Microsoft.Extensions.Configuration;
 
 namespace BackendApp.Services
 {
     public class FileUploadService : IFileUploadService
     {
         private readonly BlobServiceClient _blobServiceClient;
-        string connectionString =  "";
-
 
         public FileUploadService(IConfiguration configuration)
         {
-                _blobServiceClient = new BlobServiceClient(connectionString);
+            string connectionString = configuration.GetSection("AzureStorage:ConnectionString").Value;
+            _blobServiceClient = new BlobServiceClient(connectionString);
         }
 
-            public async Task<string> UploadFile(Stream fileStream, string fileName, string containerName)
+        public async Task<string> UploadFile(Stream fileStream, string fileName, string containerName)
         {
             var blobContainerClient = _blobServiceClient.GetBlobContainerClient(containerName);
             var blobClient = blobContainerClient.GetBlobClient(fileName);
@@ -28,10 +25,10 @@ namespace BackendApp.Services
 
             return blobClient.Uri.ToString();
         }
-        }
+    }
 
-        public interface IFileUploadService
-        {
-            Task<string> UploadFile(Stream fileStream, string fileName, string containerName);
-        }
+    public interface IFileUploadService
+    {
+        Task<string> UploadFile(Stream fileStream, string fileName, string containerName);
+    }
 }
