@@ -19,17 +19,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-  
-    options.AddPolicy(
-        "CorsPolicy",
-        corsPolicyBuilder =>
-        {
-            corsPolicyBuilder.AllowAnyOrigin()
-                               .AllowAnyMethod()
-                               .AllowAnyHeader();
-        }
-    );
+    options.AddPolicy("CorsPolicy", corsPolicyBuilder =>
+    {
+        corsPolicyBuilder.WithOrigins("https://neeboh.com")
+                         .AllowAnyMethod()
+                         .AllowAnyHeader()
+                         .AllowCredentials();
+    });
 });
+
 
 // Configure DbContext with MySQL
 builder.Services.AddDbContext<AppDbContext>(options => 
