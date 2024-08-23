@@ -10,10 +10,9 @@ namespace BackendApp.Services
 {
     public class FileUploadService : IFileUploadService
     {
-        private readonly string _storagePath;
         private readonly BlobServiceClient _blobServiceClient;
         string connectionString =  "";
-        
+
 
         public FileUploadService(IConfiguration configuration)
         {
