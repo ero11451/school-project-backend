@@ -10,7 +10,7 @@ using BackendApp.Models;
 using BackendApp.Service;
 using WebPWrecover.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
-// test
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -21,21 +21,23 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", corsPolicyBuilder =>
     {
-        corsPolicyBuilder.WithOrigins("https://neeboh.com")
+        corsPolicyBuilder.WithOrigins("https://neeboh.com", "http://127.0.0.1:5173")
                          .AllowAnyMethod()
                          .AllowAnyHeader()
+                        //  .AllowAnyOrigin()
                          .AllowCredentials();
     });
 });
 
+var connectionString = builder.Configuration["DBConnectionStrings:Connection"];
 
 // Configure DbContext with MySQL
 builder.Services.AddDbContext<AppDbContext>(options => 
     options.UseMySql(
-        builder.Configuration["DBConnectionStrings:Connection"],
+        connectionString,
         new MySqlServerVersion(new Version(8, 0, 26)),
         mySqlOptions => mySqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 2,
+            maxRetryCount: 7,
             maxRetryDelay: TimeSpan.FromSeconds(30),
             errorNumbersToAdd: null
         )

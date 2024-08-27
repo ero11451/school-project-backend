@@ -26,7 +26,7 @@ public class EmailSender : IEmailSender
         }
         await Execute(Options.SendGridKey, subject, message, toEmail);
     }
-// fjfjjjd
+
     public async Task Execute(string apiKey, string subject, string message, string toEmail)
     {
         var client = new SendGridClient(apiKey);

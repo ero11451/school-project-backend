@@ -49,7 +49,7 @@ namespace BackendApp.Services
     }
 
 
-      public ClaimsPrincipal ValidateToken(string token)
+      public ClaimsPrincipal? ValidateToken(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Convert.FromBase64String(_secretKey);
