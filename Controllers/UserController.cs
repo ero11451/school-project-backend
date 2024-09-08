@@ -52,29 +52,25 @@ namespace BackendApp.Controllers
 
         // [Authorize]
         [HttpGet("profile")]
-        public IActionResult GetProfile()
+        public IActionResult GetProfile(IdentityUser user)
         {
-            // Get the token from the Authorization header
-            var authHeader = Request.Headers["Authorization"].ToString();
-            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
-            {
-                return Unauthorized();
-            }
+            // var authHeader = Request.Headers["Authorization"].ToString();
+            // if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+            // {
+            //     return Unauthorized();
+            // }
+            // var token = authHeader.Substring("Bearer ".Length).Trim();
+            // var userDataToken = _tokenService.ValidateToken(token);
 
-            // Extract the token by removing the "Bearer " prefix
-            var token = authHeader.Substring("Bearer ".Length).Trim();
+            // if (userDataToken == null)
+            // {
+            //     return Unauthorized();
+            // }
+            // var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            // var email = User.FindFirstValue(ClaimTypes.Email);
+            // var username = User.Identity.Name;
 
-            // _usersService.
-            var userDataToken = _tokenService.ValidateToken(token);
-            if (userDataToken == null)
-            {
-                return Unauthorized();
-            }
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var email = User.FindFirstValue(ClaimTypes.Email);
-            var username = User.Identity.Name;
-
-            return Ok(new { Token = token, userDataToken = userDataToken, UserId = userId, Username = username, Email = email });
+            return Ok(new { user });
         }
 
 
