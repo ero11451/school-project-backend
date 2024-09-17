@@ -60,8 +60,7 @@ builder.Services.AddAuthentication(
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }
 
-).AddBearerToken(IdentityConstants.Be
-arerScheme);
+).AddBearerToken(IdentityConstants.BearerScheme);
 builder.Services.AddAuthorizationBuilder();
 
 builder.Services.AddIdentity<UserModel, IdentityRole>()

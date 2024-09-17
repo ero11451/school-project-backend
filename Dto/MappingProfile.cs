@@ -1,4 +1,3 @@
-using System;
 using AutoMapper;
 using backend_app.Controllers;
 using BackendApp.Controllers;
@@ -13,6 +12,7 @@ namespace backend_app
         {
             CreateMap<LocationRequest, LocationModel>();
             CreateMap<CategoryRequest, CategoryModel>();
+            // CreateMap<UserModel, UserRequest>();
         }
     }
 }
