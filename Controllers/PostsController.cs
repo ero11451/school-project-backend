@@ -10,23 +10,26 @@ namespace BackendApp.Controllers
     public class PostsController : ControllerBase
     {
         private static List<PostModel> postsModels = new List<PostModel>();
+
         private readonly PostService _postService;
+
         private readonly TokenService _tokenService;
 
-        public PostsController(PostService postService, TokenService tokenService)
+        public PostsController(
+            PostService postService,
+            TokenService tokenService
+        )
         {
             _postService = postService;
             _tokenService = tokenService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<PagedResult<PostModel>>> GetPosts(
-            int page = 1,
-            int pageSize = 4,
-            int? categoryId = null
-        )
+        public async Task<ActionResult<PagedResult<PostModel>>>
+        GetPosts(int page = 1, int pageSize = 4, int? categoryId = null)
         {
-            var posts = await _postService.GetPostsAsync(page, pageSize, categoryId);
+            var posts =
+                await _postService.GetPostsAsync(page, pageSize, categoryId);
             return Ok(posts);
         }
 
@@ -46,24 +49,26 @@ namespace BackendApp.Controllers
         // [Authorize]
         public async Task<ActionResult> CreatePost(PostRequest post)
         {
-            var newPost = new PostModel
-            {
-                Title = post.Title,
-                Content = post.Content,
-                ImgUrl = post.ImgUrl,
-                VideoUrl = post.VideoUrl,
-                Code = post.Code,
-                Status = post.Status,
-                CategoryId = post.CategoryId,
-                Question = post.QuestionText,
-                Options = post
-                    .Options.Select(option => new TestOptions
-                    {
-                        Option = option.Option,
-                        IsCorrect = option.IsCorrect
-                    })
-                    .ToList()
-            };
+            var newPost =
+                new PostModel {
+                    Title = post.Title,
+                    Content = post.Content,
+                    ImgUrl = post.ImgUrl,
+                    VideoUrl = post.VideoUrl,
+                    Code = post.Code,
+                    Status = post.Status,
+                    CategoryId = post.CategoryId,
+                    Question = post.QuestionText,
+                    Options =
+                        post
+                            .Options
+                            .Select(option =>
+                                new TestOptions {
+                                    Option = option.Option,
+                                    IsCorrect = option.IsCorrect
+                                })
+                            .ToList()
+                };
             await _postService.CreatePostAsync(newPost);
             return Ok(newPost);
         }
@@ -75,24 +80,26 @@ namespace BackendApp.Controllers
             {
                 return BadRequest();
             }
-            var newPost = new PostModel
-            {
-                Title = post.Title,
-                Content = post.Content,
-                ImgUrl = post.ImgUrl,
-                VideoUrl = post.VideoUrl,
-                Code = post.Code,
-                Status = post.Status,
-                CategoryId = post.CategoryId,
-                Question = post.QuestionText,
-                Options = post
-                    .Options.Select(option => new TestOptions
-                    {
-                        Option = option.Option,
-                        IsCorrect = option.IsCorrect
-                    })
-                    .ToList()
-            };
+            var newPost =
+                new PostModel {
+                    Title = post.Title,
+                    Content = post.Content,
+                    ImgUrl = post.ImgUrl,
+                    VideoUrl = post.VideoUrl,
+                    Code = post.Code,
+                    Status = post.Status,
+                    CategoryId = post.CategoryId,
+                    Question = post.QuestionText,
+                    Options =
+                        post
+                            .Options
+                            .Select(option =>
+                                new TestOptions {
+                                    Option = option.Option,
+                                    IsCorrect = option.IsCorrect
+                                })
+                            .ToList()
+                };
 
             await _postService.UpdatePostAsync(newPost);
             return NoContent();
@@ -106,23 +113,31 @@ namespace BackendApp.Controllers
         }
     }
 
-  public class PostRequest
-{
-    public string Title { get; set; }
-    public string Content { get; set; }
-    public string? ImgUrl { get; set; }
-    public string? VideoUrl { get; set; }
-    public string? Code { get; set; }
-    public string? Status { get; set; }
-    public int? CategoryId { get; set; }
-    public string? QuestionText { get; set; }
-    public List<TestOptionRequest> Options { get; set; }
-}
+    public class PostRequest
+    {
+        public string Title { get; set; }
 
-public class TestOptionRequest
-{
-    public string Option { get; set; }
-    public bool IsCorrect { get; set; }
-}
+        public string Content { get; set; }
 
+        public string? ImgUrl { get; set; }
+
+        public string? VideoUrl { get; set; }
+
+        public string? Code { get; set; }
+
+        public string? Status { get; set; }
+
+        public int? CategoryId { get; set; }
+
+        public string? QuestionText { get; set; }
+
+        public List<TestOptionRequest> Options { get; set; }
+    }
+
+    public class TestOptionRequest
+    {
+        public string Option { get; set; }
+
+        public bool IsCorrect { get; set; }
+    }
 }

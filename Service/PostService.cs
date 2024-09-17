@@ -1,3 +1,4 @@
+using AutoMapper;
 using BackendApp.Data;
 using BackendApp.Models;
 using Microsoft.EntityFrameworkCore;
@@ -7,9 +8,11 @@ namespace BackendApp.Services
     public class PostService
     {
         private readonly AppDbContext _context;
+        private readonly IMapper _mapper;
 
-        public PostService(AppDbContext context)
+        public PostService(AppDbContext context, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
         }
 

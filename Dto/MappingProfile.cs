@@ -8,7 +8,7 @@ namespace backend_app
 {
     public class MappingProfile: Profile
     {
-        MappingProfile()
+      private  MappingProfile()
         {
             CreateMap<LocationRequest, LocationModel>();
             CreateMap<CategoryRequest, CategoryModel>();

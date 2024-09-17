@@ -53,14 +53,11 @@ builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
-builder.Services.AddAuthentication(
-    options =>
+builder.Services.AddAuthentication( options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-}
-
-).AddBearerToken(IdentityConstants.BearerScheme);
+}).AddBearerToken(IdentityConstants.BearerScheme);
 builder.Services.AddAuthorizationBuilder();
 
 builder.Services.AddIdentity<UserModel, IdentityRole>()
