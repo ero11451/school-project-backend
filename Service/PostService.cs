@@ -8,11 +8,11 @@ namespace BackendApp.Services
     public class PostService
     {
         private readonly AppDbContext _context;
-        private readonly IMapper _mapper;
+        // private readonly IMapper _mapper;
 
-        public PostService(AppDbContext context, IMapper mapper)
+        public PostService(AppDbContext context)
         {
-            _mapper = mapper;
+            // _mapper = mapper;
             _context = context;
         }
 
