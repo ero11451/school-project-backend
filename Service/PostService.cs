@@ -1,5 +1,4 @@
 using AutoMapper;
-using BackendApp.Data;
 using BackendApp.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,35 +6,31 @@ namespace BackendApp.Services
 {
     public class PostService
     {
-        private readonly AppDbContext _context;
-        // private readonly IMapper _mapper;
+        private readonly DataBaseContext _context;
 
-        public PostService(AppDbContext context)
+        public PostService(DataBaseContext context)
         {
-            // _mapper = mapper;
             _context = context;
         }
 
-        public async Task<PagedResult<PostModel>> GetPostsAsync(
+        public async Task<PagedResult<CourseModel>> GetPostsAsync(
             int page,
             int pageSize,
-            int? categoryId = null
+            Guid? categoryId = null
         )
         {
-            var query = _context.PostModel.AsQueryable();
+            var query = _context.Courses.AsQueryable();
             var totalCount = await query.CountAsync();
             if (categoryId.HasValue)
             {
-                query = query.Where(x => x.CategoryId == categoryId);
+                // query = query.Where(x => x.categoryId == categoryId);
             }
             var posts = await query
-                .Include(p => p.Category)
-                .Include(p => p.Options)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            return new PagedResult<PostModel>
+            return new PagedResult<CourseModel>
             {
                 Data = posts,
                 Page = page,
@@ -44,43 +39,42 @@ namespace BackendApp.Services
             };
         }
 
-        public async Task<PostModel> GetPostByIdAsync(int id)
+        public async Task<CourseModel> GetPostByIdAsync(Guid id)
         {
             return await _context
-                .PostModel.Include(p => p.Options)
+                .Courses.Include(p => p)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task CreatePostAsync(PostModel post)
+        public async Task CreatePostAsync(CourseModel post)
         {
-            _context.PostModel.Add(post);
+            _context.Courses.Add(post);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdatePostAsync(PostModel post)
+        public async Task UpdatePostAsync(CourseModel post)
         {
-            _context.PostModel.Update(post);
+            _context.Courses.Update(post);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeletePostAsync(int id)
+        public async Task DeletePostAsync(Guid id)
         {
             var post = await _context
-                .PostModel.Include(p => p.Options)
+                .Courses.Include(p => p)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (post == null)
             {
                 throw new NotFoundException("Post not found.");
             }
-
-            _context.PostModel.Remove(post);
+            _context.Courses.Remove(post);
             await _context.SaveChangesAsync();
         }
 
-        private bool PostExists(int id)
+        private bool PostExists(Guid id)
         {
-            return _context.PostModel.Any(e => e.Id == id);
+            return _context.Courses.Any(e => e.Id == id);
         }
     }
 }

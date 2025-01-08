@@ -1,50 +1,45 @@
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.Extensions.Options;
-using SendGrid;
-using SendGrid.Helpers.Mail;
+using System.Net;
+using System.Net.Mail;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using System.Threading.Tasks;
+
 
 namespace WebPWrecover.Services;
 
 public class EmailSender : IEmailSender
 {
-    private readonly ILogger _logger;
-
-    public EmailSender(IOptions<AuthMessageSenderOptions> optionsAccessor,
-                       ILogger<EmailSender> logger)
+    public Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
-        Options = optionsAccessor.Value;
-        _logger = logger;
+        // No-op for development purposes
+        return Task.CompletedTask;
     }
+}
 
-    public AuthMessageSenderOptions Options { get; } //Set with Secret Manager.
 
-    public async Task SendEmailAsync(string toEmail, string subject, string message)
+
+public class SmtpEmailSender : IEmailSender
+{
+    private readonly SmtpClient _smtpClient;
+
+    public SmtpEmailSender()
     {
-        if (string.IsNullOrEmpty(Options.SendGridKey))
+        _smtpClient = new SmtpClient("smtp.your-email-provider.com")
         {
-            // throw new Exception("Null SendGridKey");
-        }
-        await Execute(Options.SendGridKey, subject, message, toEmail);
-    }
-
-    public async Task Execute(string apiKey, string subject, string message, string toEmail)
-    {
-        var client = new SendGridClient(apiKey);
-        var msg = new SendGridMessage()
-        {
-            From = new EmailAddress("Joe@contoso.com", "Password Recovery"),
-            Subject = subject,
-            PlainTextContent = message,
-            HtmlContent = message
+            Port = 587,
+            Credentials = new NetworkCredential("your-email@example.com", "your-password"),
+            EnableSsl = true,
         };
-        msg.AddTo(new EmailAddress(toEmail));
+    }
 
-        // Disable click tracking.
-        // See https://sendgrid.com/docs/User_Guide/Settings/tracking.html
-        msg.SetClickTracking(false, false);
-        var response = await client.SendEmailAsync(msg);
-        _logger.LogInformation(response.IsSuccessStatusCode 
-                               ? $"Email to {toEmail} queued successfully!"
-                               : $"Failure Email to {toEmail}");
+    public async Task SendEmailAsync(string email, string subject, string htmlMessage)
+    {
+        var mailMessage = new MailMessage("your-email@example.com", email, subject, htmlMessage)
+        {
+            IsBodyHtml = true
+        };
+
+        await _smtpClient.SendMailAsync(mailMessage);
     }
 }

@@ -1,4 +1,3 @@
-using BackendApp.Data;
 using BackendApp.Models;
 using BackendApp.Services;
 using Microsoft.EntityFrameworkCore;
@@ -9,9 +8,10 @@ namespace BackendApp.Services
     public class UsersService
     {
         // private readonly TokenService _tokenService;
-        private readonly AppDbContext _context;
+        public Microsoft.AspNetCore.Http.IHeaderDictionary Headers { get; }
+        private readonly DataBaseContext _context;
 
-        public UsersService(AppDbContext context)
+        public UsersService(DataBaseContext context)
         {
             // _tokenService = tokenService;
             _context = context;
@@ -21,16 +21,15 @@ namespace BackendApp.Services
         public async Task<PagedResult<UserModel>>
         GetAllUsersAsync(int page, int pageSize)
         {
-            var query = _context.UserModel.AsQueryable();
+            var query = _context.Users.AsQueryable();            
             var totalCount = await query.CountAsync();
-            var users =
-                await query
+            var users =  await query
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
                     .ToListAsync();
 
             return new PagedResult<UserModel> {
-                Data = users,
+                Data = users ,
                 Page = page,
                 PageSize = pageSize,
                 TotalCount = totalCount
@@ -40,21 +39,21 @@ namespace BackendApp.Services
         // Get a user by their ID
         public async Task<UserModel> GetUserByIdAsync(string id)
         {
-            return await _context.UserModel.FindAsync(id);
+            return await _context.Users.FindAsync(id);
         }
 
         // Get a user by their email
         public async Task<UserModel> GetUserByEmailAsync(string email)
         {
             return await _context
-                .UserModel
+                .Users
                 .FirstOrDefaultAsync(user => user.Email == email);
         }
 
         // Create a new user
         public async Task CreateAsync(UserModel user)
         {
-            _context.UserModel.Add (user);
+            _context.Users.Add (user);
             await _context.SaveChangesAsync();
         }
 
@@ -83,19 +82,19 @@ namespace BackendApp.Services
         // Delete a user by their ID
         public async Task DeleteUserAsync(string id)
         {
-            var user = await _context.UserModel.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
                 throw new NotFoundException("User not found.");
             }
-            _context.UserModel.Remove (user);
+            _context.Users.Remove (user);
             await _context.SaveChangesAsync();
         }
 
         // Check if a user exists by email
         public bool UserExists(string email)
         {
-            return _context.UserModel.Any(e => e.Email == email);
+            return _context.Users.Any(e => e.Email == email);
         }
 
         internal async Task GetAllUsersAsync()

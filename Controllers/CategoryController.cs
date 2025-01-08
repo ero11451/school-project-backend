@@ -1,42 +1,73 @@
-using BackendApp.Service;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using BackendApp.Models;
-using BackendApp.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using BackendApp.Services;
 
 
-namespace backend_app.Controllers
+namespace BackendApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CategoryController : ControllerBase
+    public class CategoriesController : ControllerBase
     {
-       private readonly CategoryService _categoryService;
-       public CategoryController (CategoryService categoryService) {
-              _categoryService = categoryService;
-       }
+        private readonly CategoryService _categoryService;
 
-       [HttpGet]
-       public async Task<ActionResult<List<CategoryModel>>> GetCategories(){
-            var categories = await _categoryService.GetAsync();
+        public CategoriesController(CategoryService categoryService)
+        {
+            _categoryService = categoryService;
+        }
+
+        // GET: api/categories
+        [HttpGet]
+        public async Task<ActionResult<List<CategoryModel>>> GetAllCategories()
+        {
+            var categories = await _categoryService.GetAllCategoriesAsync();
             return Ok(categories);
         }
 
-        
-       [HttpPost]
-       public async Task<ActionResult> CreateCategory(CategoryRequest category){
-            var categoryNew = new CategoryModel{
-                category = category.category
-             };
-            await _categoryService.CreateAsync(categoryNew);
-            return CreatedAtAction(nameof(GetCategories), categoryNew);
+        // GET: api/categories/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<CategoryModel>> GetCategoryById(Guid id)
+        {
+            var category = await _categoryService.GetCategoryByIdAsync(id);
+            if (category == null)
+            {
+                return NotFound();
+            }
+            return Ok(category);
         }
-        
-    }
 
-    public class CategoryRequest
-    {
-        public string category { get; set; }
+        // Delete: api/categories/{id}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<CategoryModel>> DeleteCategory(Guid id)
+        {
+            var category = await _categoryService.DeleteCategoryByIdAsync(id);
+            return Ok(category);
+        }
+
+        // POST: api/categories
+        [HttpPost]
+        public async Task<ActionResult<CategoryModel>> CreateCategory(CategoryDTO request)
+        {
+            var category = new CategoryDTO().createCategoryDto(request);
+            var newCategory = await _categoryService.CreateCategoryAsync(category);
+            return CreatedAtAction(nameof(GetCategoryById), new { id = newCategory.Id }, newCategory);
+        }
+
+        // PUT: api/categories/{id}
+        [HttpPut("{id}")]
+        public async Task<ActionResult<CategoryModel>> UpdateCategory(Guid id, CategoryModel category)
+        {
+            var updatedCategory = await _categoryService.UpdateCategoryAsync(id, category);
+            if (updatedCategory == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedCategory);
+        }
     }
-   
 }

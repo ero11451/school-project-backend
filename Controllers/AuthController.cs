@@ -1,76 +1,92 @@
-using BackendApp.Models;
-using BackendApp.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.Security.Claims;
+using BackendApp.Models;
 
-namespace BackendApp.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class AuthController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class AuthController : ControllerBase
+    private readonly UserManager<UserModel> _userManager;
+    private readonly SignInManager<UserModel> _signInManager;
+    private readonly IConfiguration _configuration;
+
+    public AuthController(
+        UserManager<UserModel> userManager,
+        SignInManager<UserModel> signInManager,
+        IConfiguration configuration)
     {
-        private readonly TokenService _tokenService;
-        private readonly UsersService _usersService;
-        private readonly IPasswordHasher<UserModel> _passwordHasher;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _configuration = configuration;
+    }
 
-        public AuthController(TokenService tokenService, UsersService usersService, IPasswordHasher<UserModel> passwordHasher)
+    [HttpPost("register")]
+    public async Task<IActionResult> Register(RegisterModel model)
+    {
+        var user = new UserModel
         {
-            _tokenService = tokenService;
-            _usersService = usersService;
-            _passwordHasher = passwordHasher;
+            UserName = model.UserName,
+            Email = model.Email
+        };
 
+        var result = await _userManager.CreateAsync(user, model.Password);
+
+        
+
+        if (!result.Succeeded)
+        {
+            return BadRequest(result.Errors);
         }
 
-        [HttpPost("login")]
-         public async Task<IActionResult> Login([FromBody] LoginBody login)
-            {
-                var user = await _usersService.GetUserByEmailAsync(login.email);
-                if (user == null)
-                {
-                    return Unauthorized();
-                }
+        return Ok(new { Message = "User registered successfully"});
+    }
 
-                var result = _passwordHasher.VerifyHashedPassword(user, user.Password, login.password);
-                if (result == PasswordVerificationResult.Success)
-                {
-                    var token = _tokenService.GenerateToken(login.email);
-                    return Ok(new { Token = token, User = user });
-                }
-
-                return Unauthorized();
-            }
-
-
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterBody register)
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginModel model)
+    {
+        var user = await _userManager.FindByEmailAsync(model.Email);
+        if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
         {
-            var user = await _usersService.GetUserByEmailAsync(register.email);
-            if (user != null)
-            {
-                return BadRequest("User already exists");
-            }
-            var hashPassword = _passwordHasher.HashPassword(user, register.Password);
-            var newUser = new UserModel
-            {
-                Email = register.email,
-                Password = hashPassword,
-                user_name = register.username
-            };
-            await _usersService.CreateAsync(newUser);
-            return Ok();
+            return Unauthorized();
         }
-    }
 
-    public class RegisterBody
-    {
-        public string email { get; set; }
-        public string Password { get; set; }
-        public string username { get; set; }
-    }
+        var authClaims = new[]
+        {
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
 
-    public class LoginBody
-    {
-        public string email { get; set; } = null;
-        public string password { get; set; } = null;
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["Jwt:Issuer"],
+            audience: _configuration["Jwt:Audience"],
+            expires: DateTime.Now.AddHours(1),
+            claims: authClaims,
+            signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+        );
+
+        return Ok(new
+        {
+            token = new JwtSecurityTokenHandler().WriteToken(token),
+            expiration = token.ValidTo
+        });
     }
+}
+
+public class RegisterModel
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
+    public string UserName { get; set; }
+}
+
+public class LoginModel
+{
+    public string Email { get; set; }
+    public string Password { get; set; }
 }

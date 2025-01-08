@@ -4,30 +4,25 @@ namespace BackendApp.Models
 {
     public class PostModel
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
-        public string Title { get; set; } = null;
+        public string title { get; set; } = null;
 
-        public string Content { get; set; } = null;
+        public string content { get; set; } = null;
 
-        public string? ImgUrl { get; set; }
+        public string? imgUrl { get; set; }
 
-        public string? VideoUrl { get; set; }
+        public string? videoUrl { get; set; }
 
         public string? Code { get; set; }
 
-        public string? Summary { get; set; }
+        public string? summary { get; set; }
 
         public string? Status { get; set; }
 
         public int? CategoryId { get; set; }
         public CategoryModel ? Category { get; set; }
 
-        // public int? LocationId { get; set; }
-        // public LocationModel Location { get; set; }
-
-        // public int? TeacherId { get; set; }
-        // public UserModel Teacher { get; set; }
 
         public string? Question { get; set; }
 

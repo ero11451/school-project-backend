@@ -4,13 +4,11 @@ namespace BackendApp.Models
 {
     public class UserModel : IdentityUser
   {
-    public string? user_name { get; set; } = null;
-    public string? Password { get; set; } 
-    // public string? Phone { get; set; }
-    public string? Bio { get; set; }
-
-    // [StringLength(255)]
-    public string? UserImgUrl { get; set; }
+    public string ? user_name { get; set; } 
+    public string ? Password { get; set; } 
+    public int ? Phone { get; set; }
+    public string ? Bio { get; set; }
+    public string? UserimgUrl { get; set; }
 
     public Gender? Gender { get; set; }
 
