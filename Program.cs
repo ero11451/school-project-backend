@@ -3,9 +3,9 @@ using BackendApp.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System.Text.Json.Serialization;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("CorsPolicy", corsPolicyBuilder =>
     {
         corsPolicyBuilder.WithOrigins(
-                "https://neeboh.com", 
+                "https://neeboh.com",
                 "http://localhost:5173"
             )
             .AllowAnyMethod()
@@ -29,33 +29,46 @@ builder.Services.AddCors(options =>
     });
 });
 
-
 // Add Identity services
 builder.Services.AddIdentity<UserModel, IdentityRole>()
     .AddEntityFrameworkStores<DataBaseContext>()
     .AddDefaultTokenProviders();
 
 // Configure JWT Authentication
-builder.Services.AddAuthentication(options =>
+string jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
 {
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+    throw new ArgumentException("JWT key must be at least 32 characters long.");
+}
+
+string validIssuer = builder.Configuration["Jwt:Issuer"] ?? "your-issuer";
+string validAudience = builder.Configuration["Jwt:Audience"] ?? "your-audience";
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
-});
-
-
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = validIssuer,
+            ValidAudience = validAudience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = context =>
+            {
+                // Prevent the default redirect to '/Account/Login' for APIs
+                context.HandleResponse();
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+                return context.Response.WriteAsync("{\"message\":\"Unauthorized\"}");
+            }
+        };
+    });
 
 // Logging Configuration
 builder.Services.AddLogging(logging =>
@@ -66,10 +79,10 @@ builder.Services.AddLogging(logging =>
 });
 
 // Add Custom Services
-builder.Services.AddScoped<PostService>();
-builder.Services.AddScoped<CourseService>();
-builder.Services.AddScoped<UsersService>();
-builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<PostService, PostService>();
+builder.Services.AddScoped<CourseService, CourseService>();
+builder.Services.AddScoped<UsersService, UsersService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 
 // Configure JSON Serialization
@@ -81,16 +94,17 @@ builder.Services.AddControllers()
     });
 
 // Configure DbContext with MySQL
+string? connectionString = builder.Configuration.GetConnectionString("DevConnection");
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("Database connection string is missing or empty.");
+}
+
 builder.Services.AddDbContext<DataBaseContext>(options =>
     options.UseMySql(
-        builder.Configuration.GetConnectionString("DevConnection"),
+        connectionString,
         new MySqlServerVersion(new Version(8, 0, 36))
-    )
-);
-
-
-
-
+    ));
 
 var app = builder.Build();
 
@@ -105,24 +119,20 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
-
-// CORS Policy
+// Apply CORS Policy
 app.UseCors("CorsPolicy");
 
-
+// Custom Middleware for Logging
 app.UseMiddleware<RequestLoggingMiddleware>();
 
-// HTTPS, Static Files, and Routing
+// Middleware Setup
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Map Controllers
 app.MapControllers();
-
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.Run();

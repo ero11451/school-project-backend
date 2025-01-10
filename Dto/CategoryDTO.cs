@@ -3,15 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace BackendApp.Models
 {
-	public class CategoryDTO
+	public class CategoryDTO : CategoryModel
 	{
 		public string name { get; set; }
 		public string description { get; set; }
         public string ? ImageUrl {get ; set;}
-        // public UserModel  user { get; set; }
-        // public CourseModel  courses { get; set; }
-        // public DateTime CreatedTimestamp { get; set; }
-
 
   public  CategoryModel createCategoryDto(CategoryDTO category){
             // create category

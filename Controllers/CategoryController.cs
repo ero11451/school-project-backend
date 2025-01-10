@@ -1,12 +1,8 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using BackendApp.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using BackendApp.Services;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BackendApp.Controllers
 {
@@ -14,14 +10,15 @@ namespace BackendApp.Controllers
     [Route("api/[controller]")]
     public class CategoriesController : ControllerBase
     {
-        private readonly CategoryService _categoryService;
+        private readonly ICategoryService _categoryService;
 
-        public CategoriesController(CategoryService categoryService)
+        public CategoriesController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
         }
 
         // GET: api/categories
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
         public async Task<ActionResult<List<CategoryModel>>> GetAllCategories()
         {
@@ -30,42 +27,59 @@ namespace BackendApp.Controllers
         }
 
         // GET: api/categories/{id}
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet("{id}")]
         public async Task<ActionResult<CategoryModel>> GetCategoryById(Guid id)
         {
             var category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
-                return NotFound();
+                return NotFound(new { Message = "Category not found" });
             }
             return Ok(category);
         }
 
-        // Delete: api/categories/{id}
+        // DELETE: api/categories/{id}
+        [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<CategoryModel>> DeleteCategory(Guid id)
+        public async Task<ActionResult> DeleteCategory(Guid id)
         {
-            var category = await _categoryService.DeleteCategoryByIdAsync(id);
-            return Ok(category);
+            var isDeleted = await _categoryService.DeleteCategoryByIdAsync(id);
+            // if (isDeleted)
+            // {
+            //     return NotFound(new { Message = "Category not found or could not be deleted" });
+            // }
+            return NoContent();
         }
 
         // POST: api/categories
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult<CategoryModel>> CreateCategory(CategoryDTO request)
+        public async Task<ActionResult<CategoryModel>> CreateCategory([FromBody] CategoryDTO request)
         {
-            var category = new CategoryDTO().createCategoryDto(request);
-            var newCategory = await _categoryService.CreateCategoryAsync(category);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var newCategory = await _categoryService.CreateCategoryAsync(request);
             return CreatedAtAction(nameof(GetCategoryById), new { id = newCategory.Id }, newCategory);
         }
 
         // PUT: api/categories/{id}
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<ActionResult<CategoryModel>> UpdateCategory(Guid id, CategoryModel category)
+        public async Task<ActionResult<CategoryModel>> UpdateCategory(Guid id, [FromBody] CategoryDTO request)
         {
-            var updatedCategory = await _categoryService.UpdateCategoryAsync(id, category);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var updatedCategory = await _categoryService.UpdateCategoryAsync(id, request);
             if (updatedCategory == null)
             {
-                return NotFound();
+                return NotFound(new { Message = "Category not found" });
             }
             return Ok(updatedCategory);
         }
