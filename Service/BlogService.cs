@@ -4,22 +4,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackendApp.Services
 {
-    public class PostService
+    public class BlogService
     {
         private readonly DataBaseContext _context;
 
-        public PostService(DataBaseContext context)
+        public BlogService(DataBaseContext context)
         {
             _context = context;
         }
 
-        public async Task<PagedResult<CourseModel>> GetPostsAsync(
+        public async Task<PagedResult<BlogModel>> GetPostsAsync(
             int page,
             int pageSize,
             Guid? categoryId = null
         )
         {
-            var query = _context.Courses.AsQueryable();
+            var query = _context.Blogs.AsQueryable();
             var totalCount = await query.CountAsync();
             if (categoryId.HasValue)
             {
@@ -30,7 +30,7 @@ namespace BackendApp.Services
                 .Take(pageSize)
                 .ToListAsync();
 
-            return new PagedResult<CourseModel>
+            return new PagedResult<BlogModel>
             {
                 Data = posts,
                 Page = page,
@@ -39,10 +39,10 @@ namespace BackendApp.Services
             };
         }
 
-        public async Task<CourseModel> GetPostByIdAsync(Guid id)
+        public async Task<BlogRequestDTO> GetPostByIdAsync(Guid id)
         {
             return await _context
-                .Courses.Include(p => p)
+                ..Include(p => p)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 

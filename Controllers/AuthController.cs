@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using System.Security.Claims;
 using BackendApp.Models;
 using System.ComponentModel.DataAnnotations;
 
@@ -14,13 +11,16 @@ public class AuthController : ControllerBase
     private readonly UserManager<UserModel> _userManager;
     private readonly SignInManager<UserModel> _signInManager;
     private readonly IConfiguration _configuration;
+    private readonly AuthService _authService;
 
     public AuthController(
+        AuthService authService,
         UserManager<UserModel> userManager,
         SignInManager<UserModel> signInManager,
         IConfiguration configuration)
     {
-        _userManager = userManager;
+        _authService   = authService;
+        _userManager   = userManager;
         _signInManager = signInManager;
         _configuration = configuration;
     }
@@ -58,12 +58,13 @@ public class AuthController : ControllerBase
         }
 
         var user = await _userManager.FindByEmailAsync(model.Email);
+        
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
         {
             return Unauthorized(new { Message = "Invalid email or password" });
         }
 
-        var token = GenerateJwtToken(user);
+        var token = _authService.GenerateJwtToken(user);
 
         return Ok(new
         {
@@ -75,45 +76,45 @@ public class AuthController : ControllerBase
     
 
 
-   private JwtSecurityToken GenerateJwtToken(UserModel user)
-{
-    // Fetch settings from configuration
-    string jwtKey = _configuration["Jwt:Key"];
-    string jwtIssuer = _configuration["Jwt:Issuer"];
-    string jwtAudience = _configuration["Jwt:Audience"];
+//    private JwtSecurityToken GenerateJwtToken(UserModel user)
+// {
+//     // Fetch settings from configuration
+//     string jwtKey = _configuration["Jwt:Key"];
+//     string jwtIssuer = _configuration["Jwt:Issuer"];
+//     string jwtAudience = _configuration["Jwt:Audience"];
 
-    // Validate the JWT key
-    if (string.IsNullOrEmpty(jwtKey) || jwtKey.Length < 32)
-    {
-        throw new ArgumentException("JWT key must be at least 32 characters long.");
-    }
+//     // Validate the JWT key
+//     if (string.IsNullOrEmpty(jwtKey) || jwtKey.Length < 32)
+//     {
+//         throw new ArgumentException("JWT key must be at least 32 characters long.");
+//     }
 
-    // Prepare claims
-    var authClaims = new List<Claim>
-    {
-        new Claim(ClaimTypes.NameIdentifier, user.Id), // Include user ID
-        new Claim(ClaimTypes.Name, user.UserName),
-        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-    };
+//     // Prepare claims
+//     var authClaims = new List<Claim>
+//     {
+//         new Claim(ClaimTypes.NameIdentifier, user.Id), // Include user ID
+//         new Claim(ClaimTypes.Name, user.UserName),
+//         new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+//     };
 
-    // Add the Admin role claim if applicable
-    if (user.UserName.Equals("admin_user", StringComparison.OrdinalIgnoreCase))
-    {
-        authClaims.Add(new Claim(ClaimTypes.Role, "Admin"));
-    }
+//     // Add the Admin role claim if applicable
+//     if (user.UserName.Equals("admin_user", StringComparison.OrdinalIgnoreCase))
+//     {
+//         authClaims.Add(new Claim(ClaimTypes.Role, "Admin"));
+//     }
 
-    // Create signing key
-    var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+//     // Create signing key
+//     var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
-    // Generate the JWT token
-    return new JwtSecurityToken(
-        issuer: jwtIssuer,
-        audience: jwtAudience,
-        expires: DateTime.UtcNow.AddHours(1), // Use UTC for consistency
-        claims: authClaims,
-        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-    );
-}
+//     // Generate the JWT token
+//     return new JwtSecurityToken(
+//         issuer: jwtIssuer,
+//         audience: jwtAudience,
+//         expires: DateTime.UtcNow.AddHours(1), // Use UTC for consistency
+//         claims: authClaims,
+//         signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+//     );
+// }
 
 }
 

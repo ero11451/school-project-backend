@@ -174,3 +174,6 @@
 /Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/backend-app.pdb
 /Users/user/Desktop/school-project/backend-app/obj/Debug/net8.0/backend-app.genruntimeconfig.cache
 /Users/user/Desktop/school-project/backend-app/obj/Debug/net8.0/ref/backend-app.dll
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/backend-app.staticwebassets.endpoints.json
+/Users/user/Desktop/school-project/backend-app/obj/Debug/net8.0/staticwebassets.build.endpoints.json
+/Users/user/Desktop/school-project/backend-app/obj/Debug/net8.0/staticwebassets/msbuild.backend-app.Microsoft.AspNetCore.StaticWebAssetEndpoints.props

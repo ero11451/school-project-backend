@@ -1,66 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace BackendApp.Models
 {
     public class CourseModel
     {
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
-        
+        public Guid Id { get; set; } // Primary key for the course
+
         [Required]
-        public string Title { get; set; }
+        [MaxLength(200)]
+        public string CourseName { get; set; } // Name of the course
+
         [Required]
-        public string Content { get; set; }
-        public string? Summary { get; set; }
-        public string? ImgUrl { get; set; }
-        public string? Code { get; set; }
-        public string? VideoUrl { get; set; }
-        public string? Status { get; set; }
+        public string Description { get; set; } // Detailed description of the course
 
-        // Foreign key to CategoryModel
-        public Guid CategoryId { get; set; }
-        
-        // Navigation property for CategoryModel
-        [ForeignKey("CategoryId")]
-        public CategoryModel? Category { get; set; }
+        public string ? ThumbnailUrl { get; set; } // URL for a course thumbnail image
 
-        // Foreign key for User (Teacher)
-        public string? TeacherId { get; set; }
+        public string ? Status { get; set; } // Status of the course (e.g., Active, Archived)
 
-        // Navigation property for Teacher
-        [ForeignKey("TeacherId")]
-        public UserModel? Teacher { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now; // Date when the course was created
 
-        public string? Question { get; set; }
-        
-        // Optional foreign key reference for Options
-        public Guid? OptionId { get; set; }
-        
-        // One-to-many relationship with OptionsModel
-         [JsonIgnore]
-        public List<OptionsModel>? Options { get; set; } = new List<OptionsModel>();
+        // Navigation Properties
+        public UserModel? Creator { get; set; } // User who created the course
 
-        // Timestamp for when the course was created
-        public DateTime CreatedTimestamp { get; set; } = DateTime.UtcNow;
+        [Required]
+        public string CreatorId { get; set; } // Updated to match UserModel primary key type
+
+        public Guid CategoryId { get; set; } // Added CategoryId property
+
+        public CategoryModel? Category { get; set; } // Added Category navigation property
+
+        public ICollection<ClassModel>? Classes { get; set; }
     }
-
- public class OptionsModel
-{
-    [Key]
-    public Guid Id { get; set; } = Guid.NewGuid();
-
-    public string OptionText { get; set; }
-    public bool IsCorrect { get; set; }
-
-    // Foreign key to CourseModel
-    public Guid CourseId { get; set; }
-    [JsonIgnore]
-    public CourseModel? Course { get; set; } // Navigation property to CourseModel
-}
-
-
 }

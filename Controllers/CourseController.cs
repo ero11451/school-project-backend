@@ -1,72 +1,93 @@
+using Microsoft.AspNetCore.Mvc;
 using BackendApp.Models;
 using BackendApp.Services;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BackendApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CoursesController : ControllerBase
+    public class CourseController : ControllerBase
     {
-        private readonly CourseService _courseService;
+        private readonly ICourseService _courseService;
 
-        public CoursesController(CourseService courseService)
+        public CourseController(ICourseService courseService)
         {
             _courseService = courseService;
         }
 
-        // GET: api/courses
+        // GET: api/course f
         [HttpGet]
-        public async Task<ActionResult<List<CourseModel>>> GetAllCourses(Guid categoryId, int page = 1, int pageSize = 10)
+        public IActionResult GetAllCourses([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var courses = await _courseService.GetAllCoursesAsync(categoryId, page, pageSize);
+            if (pageNumber < 1 || pageSize < 1)
+                return BadRequest("Page number and page size must be greater than 0.");
+
+            var courses = _courseService.GetAllCourses(pageNumber, pageSize);
             return Ok(courses);
         }
 
-        // GET: api/courses/{id}
+        // GET: api/course/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<CourseModel>> GetCourseById(Guid id)
+        public IActionResult GetCourseById(Guid id)
         {
-            var course = await _courseService.GetCourseByIdAsync(id);
-            if (course == null)
-            {
-                return NotFound();
-            }
+            var course = _courseService.GetCourseById(id);
+            if (course == null) return NotFound();
+
             return Ok(course);
         }
 
-        // POST: api/courses
+        // POST: api/course
         [HttpPost]
-        public async Task<ActionResult<CourseModel>> CreateCourse(CourseCreateDTO request)
+        public async Task<IActionResult> CreateCourse([FromBody] CreateCourseRequest courseRequest)
         {
-            var body = CourseCreateMapper.MapToCourseModel(request);
-            var newCourse = await _courseService.CreateCourseAsync(body);
-            return CreatedAtAction(nameof(GetCourseById), new { id = newCourse.Id }, newCourse);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var courseModel = new CourseModel
+            {
+                CourseName = courseRequest.CourseName,
+                Description = courseRequest.Description,
+                ThumbnailUrl = courseRequest.ThumbnailUrl,
+                Status = courseRequest.Status,
+                CreatorId = courseRequest.CreatorId,
+                CategoryId = courseRequest.CategoryId
+            };
+
+            var createdCourse = await _courseService.CreateCourse(courseModel);
+
+            return CreatedAtAction(nameof(GetCourseById), createdCourse);
         }
 
-        // PUT: api/courses/{id}
+        // PUT: api/course/{id}
         [HttpPut("{id}")]
-        public async Task<ActionResult<CourseModel>> UpdateCourse(Guid id, CourseCreateDTO course)
+        public IActionResult UpdateCourse(Guid id, [FromBody] UpdateCourseRequest courseRequest)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var updatedCourse = await _courseService.UpdateCourseAsync(id, course);
-            if (updatedCourse == null)
+            var updatedCourse = new CourseModel
             {
-                return NotFound();
-            }
-            return Ok(updatedCourse);
-        }
-        // PUT: api/courses/{id}
-        [HttpDelete("delete/{id}")]
-        public async Task<ActionResult> DeleteCourse(Guid id)
-        {
-            var response = await _courseService.DeleteCourse(id); // Ensure await is used
-            if (response == null)
-            {
-                return NotFound();
-            }
-            return Ok(new {response, message = "Course deleted successfully"});
+                CourseName = courseRequest.CourseName,
+                Description = courseRequest.Description,
+                ThumbnailUrl = courseRequest.ThumbnailUrl,
+                Status = courseRequest.Status,
+                CreatorId = courseRequest.CreatorId,
+                CategoryId = courseRequest.CategoryId
+            };
+
+            var updated = _courseService.UpdateCourse(id, updatedCourse);
+            if (updated == null) return NotFound();
+
+            return Ok(updated);
         }
 
+        // DELETE: api/course/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCourse(Guid id)
+        {
+            var result = await _courseService.DeleteCourse(id);
+            if (result == null) return NotFound();
+
+            return NoContent();
+        }
     }
+
 }

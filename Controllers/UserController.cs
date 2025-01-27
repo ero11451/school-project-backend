@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using BackendApp.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 
 namespace BackendApp.Controllers
 {
@@ -42,7 +43,7 @@ namespace BackendApp.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllUsers(int page = 1, int pageSize = 10)
         {
-            var users = _userManager.Users.ToList();
+            var users = await _userManager.Users.ToListAsync();
             return Ok(users.Select(user => new
             {
                 user.Id,

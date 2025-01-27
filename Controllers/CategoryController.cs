@@ -1,87 +1,75 @@
+using System;
+using Microsoft.AspNetCore.Mvc;
 using BackendApp.Models;
 using BackendApp.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BackendApp.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class CategoriesController : ControllerBase
+    public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
 
-        public CategoriesController(ICategoryService categoryService)
+        public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
         }
 
-        // GET: api/categories
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        // GET: api/category
         [HttpGet]
-        public async Task<ActionResult<List<CategoryModel>>> GetAllCategories()
+        public IActionResult GetAllCategories([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
-            var categories = await _categoryService.GetAllCategoriesAsync();
+            if (pageNumber < 1 || pageSize < 1)
+                return BadRequest("Page number and page size must be greater than 0.");
+
+            var categories = _categoryService.GetAllCategories(pageNumber, pageSize);
             return Ok(categories);
         }
 
-        // GET: api/categories/{id}
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        // GET: api/category/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryModel>> GetCategoryById(Guid id)
+        public IActionResult GetCategoryById(Guid id)
         {
-            var category = await _categoryService.GetCategoryByIdAsync(id);
+            var category = _categoryService.GetCategoryById(id);
+            if (category == null) return NotFound();
+
+            return Ok(category);
+        }
+
+        // POST: api/category
+        [HttpPost]
+        public async Task<IActionResult> CreateCategoryAsync([FromBody] CreateCategoryRequest categoryRequest)
+         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var newCategory = await _categoryService.CreateCategory(categoryRequest);
+            return Ok(newCategory);
+        }
+
+        // PUT: api/category/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateCategory(Guid id, [FromBody] UpdateCategoryRequest categoryRequest)
+        {
+            var updatedCategory = await _categoryService.UpdateCategory(id, categoryRequest);
+            if (updatedCategory == null) return NotFound();
+            return Ok(updatedCategory);
+        }
+
+        // DELETE: api/category/{id}
+       [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCategory(Guid id)
+        {
+            var category = await _categoryService.DeleteCategory(id);
             if (category == null)
             {
                 return NotFound(new { Message = "Category not found" });
             }
+
             return Ok(category);
-        }
-
-        // DELETE: api/categories/{id}
-        [Authorize(Roles = "Admin", AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteCategory(Guid id)
-        {
-            var isDeleted = await _categoryService.DeleteCategoryByIdAsync(id);
-            // if (isDeleted)
-            // {
-            //     return NotFound(new { Message = "Category not found or could not be deleted" });
-            // }
-            return NoContent();
-        }
-
-        // POST: api/categories
-        [Authorize(Roles = "Admin")]
-        [HttpPost]
-        public async Task<ActionResult<CategoryModel>> CreateCategory([FromBody] CategoryDTO request)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var newCategory = await _categoryService.CreateCategoryAsync(request);
-            return CreatedAtAction(nameof(GetCategoryById), new { id = newCategory.Id }, newCategory);
-        }
-
-        // PUT: api/categories/{id}
-        [Authorize(Roles = "Admin")]
-        [HttpPut("{id}")]
-        public async Task<ActionResult<CategoryModel>> UpdateCategory(Guid id, [FromBody] CategoryDTO request)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var updatedCategory = await _categoryService.UpdateCategoryAsync(id, request);
-            if (updatedCategory == null)
-            {
-                return NotFound(new { Message = "Category not found" });
-            }
-            return Ok(updatedCategory);
         }
     }
 }

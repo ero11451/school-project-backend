@@ -8,24 +8,18 @@ namespace BackendApp.Models
     public class CategoryModel
     {
         [Key]
-        public Guid Id { get; set; } = Guid.NewGuid();
+        public Guid Id { get; set; } // Primary key for the category
 
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public string ? ImageUrl { get; set;}
+        [Required]
+        [MaxLength(100)]
+        public string CategoryName { get; set; } // Name of the category (e.g., "Programming", "Design", etc.)
 
-        // Foreign key for User (Teacher)
-        public string? TeacherId { get; set; }
+        public string Description { get; set; } // A brief description of the category
 
-        // Navigation property for Teacher
-        [ForeignKey("TeacherId")]
-        public UserModel? Teacher { get; set; }
+        public DateTime CreatedTimestamp { get; set; } = DateTime.UtcNow; // Set to  UTC for consistency
 
-        // One-to-many relationship with CourseModel
-        public ICollection<CourseModel> Courses { get; set; } = new List<CourseModel>();
-
-        public DateTime CreatedTimestamp { get; set; }
-
-       
+        public Guid CategoryId { get; set; } 
+        // Navigation Property
+        public ICollection<CourseModel> Courses { get; set; } // List of courses related to this category
     }
 }

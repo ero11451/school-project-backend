@@ -28,6 +28,14 @@ namespace backend_app.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
                     b.Property<DateTime>("CreatedTimestamp")
                         .HasColumnType("datetime(6)");
 
@@ -35,21 +43,93 @@ namespace backend_app.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("longtext");
+                    b.HasKey("Id");
 
-                    b.Property<string>("Name")
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("BackendApp.Models.ClassModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ClassName")
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("TeacherId")
-                        .HasColumnType("varchar(255)");
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<Guid>("CourseId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ImgUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("MaxStudents")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Summary")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("VideoUrl")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TeacherId");
+                    b.HasIndex("CourseId");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Classes");
+                });
+
+            modelBuilder.Entity("BackendApp.Models.ContactModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedTimestamp")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Subject")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactsUs");
                 });
 
             modelBuilder.Entity("BackendApp.Models.CourseModel", b =>
@@ -61,57 +141,61 @@ namespace backend_app.Migrations
                     b.Property<Guid>("CategoryId")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("Code")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Content")
+                    b.Property<string>("CourseName")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
 
-                    b.Property<DateTime>("CreatedTimestamp")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("ImgUrl")
-                        .HasColumnType("longtext");
+                    b.Property<string>("CreatorId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
 
-                    b.Property<Guid?>("OptionId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Question")
+                    b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Status")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("Summary")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("TeacherId")
-                        .HasColumnType("varchar(255)");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("VideoUrl")
+                    b.Property<string>("ThumbnailUrl")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("TeacherId");
+                    b.HasIndex("CreatorId");
 
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("BackendApp.Models.OptionsModel", b =>
+            modelBuilder.Entity("BackendApp.Models.TestModel", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<Guid>("TestId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("CourseId")
+                    b.Property<Guid>("ClassId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("TestId");
+
+                    b.HasIndex("ClassId");
+
+                    b.ToTable("Tests");
+                });
+
+            modelBuilder.Entity("BackendApp.Models.TestOptionModel", b =>
+                {
+                    b.Property<Guid>("OptionId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
                     b.Property<bool>("IsCorrect")
@@ -121,11 +205,14 @@ namespace backend_app.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.HasKey("Id");
+                    b.Property<Guid>("TestId")
+                        .HasColumnType("char(36)");
 
-                    b.HasIndex("CourseId");
+                    b.HasKey("OptionId");
 
-                    b.ToTable("Options");
+                    b.HasIndex("TestId");
+
+                    b.ToTable("TestOptions");
                 });
 
             modelBuilder.Entity("BackendApp.Models.UserModel", b =>
@@ -348,13 +435,15 @@ namespace backend_app.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BackendApp.Models.CategoryModel", b =>
+            modelBuilder.Entity("BackendApp.Models.ClassModel", b =>
                 {
-                    b.HasOne("BackendApp.Models.UserModel", "Teacher")
-                        .WithMany()
-                        .HasForeignKey("TeacherId");
+                    b.HasOne("BackendApp.Models.CourseModel", "Course")
+                        .WithMany("Classes")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Teacher");
+                    b.Navigation("Course");
                 });
 
             modelBuilder.Entity("BackendApp.Models.CourseModel", b =>
@@ -365,24 +454,37 @@ namespace backend_app.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BackendApp.Models.UserModel", "Teacher")
-                        .WithMany()
-                        .HasForeignKey("TeacherId");
+                    b.HasOne("BackendApp.Models.UserModel", "Creator")
+                        .WithMany("Courses")
+                        .HasForeignKey("CreatorId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Category");
 
-                    b.Navigation("Teacher");
+                    b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("BackendApp.Models.OptionsModel", b =>
+            modelBuilder.Entity("BackendApp.Models.TestModel", b =>
                 {
-                    b.HasOne("BackendApp.Models.CourseModel", "Course")
-                        .WithMany("Options")
-                        .HasForeignKey("CourseId")
+                    b.HasOne("BackendApp.Models.ClassModel", "Class")
+                        .WithMany("Tests")
+                        .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Course");
+                    b.Navigation("Class");
+                });
+
+            modelBuilder.Entity("BackendApp.Models.TestOptionModel", b =>
+                {
+                    b.HasOne("BackendApp.Models.TestModel", "Test")
+                        .WithMany("Options")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Test");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -441,9 +543,24 @@ namespace backend_app.Migrations
                     b.Navigation("Courses");
                 });
 
+            modelBuilder.Entity("BackendApp.Models.ClassModel", b =>
+                {
+                    b.Navigation("Tests");
+                });
+
             modelBuilder.Entity("BackendApp.Models.CourseModel", b =>
                 {
+                    b.Navigation("Classes");
+                });
+
+            modelBuilder.Entity("BackendApp.Models.TestModel", b =>
+                {
                     b.Navigation("Options");
+                });
+
+            modelBuilder.Entity("BackendApp.Models.UserModel", b =>
+                {
+                    b.Navigation("Courses");
                 });
 #pragma warning restore 612, 618
         }

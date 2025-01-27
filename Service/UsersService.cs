@@ -8,7 +8,7 @@ namespace BackendApp.Services
     public class UsersService
     {
         // private readonly TokenService _tokenService;
-        public Microsoft.AspNetCore.Http.IHeaderDictionary Headers { get; }
+        public required Microsoft.AspNetCore.Http.IHeaderDictionary Headers { get; set; }
         private readonly DataBaseContext _context;
 
         public UsersService(DataBaseContext context)
@@ -37,17 +37,19 @@ namespace BackendApp.Services
         }
 
         // Get a user by their ID
-        public async Task<UserModel> GetUserByIdAsync(string id)
+        public async Task<UserModel?> GetUserByIdAsync(string id)
         {
-            return await _context.Users.FindAsync(id);
+            var user = await _context.Users.FindAsync(id);
+            return user ?? null;
         }
 
         // Get a user by their email
-        public async Task<UserModel> GetUserByEmailAsync(string email)
+        public async Task<UserModel?> GetUserByEmailAsync(string email)
         {
-            return await _context
+            var user = await _context
                 .Users
                 .FirstOrDefaultAsync(user => user.Email == email);
+            return user ?? null;
         }
 
         // Create a new user
@@ -97,9 +99,10 @@ namespace BackendApp.Services
             return _context.Users.Any(e => e.Email == email);
         }
 
-        internal async Task GetAllUsersAsync()
+        internal async Task<List<UserModel>> GetAllUsersAsync()
         {
-            throw new NotImplementedException();
+         return  await _context.Users.ToListAsync();
+           
         }
     }
 

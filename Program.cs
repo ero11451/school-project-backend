@@ -44,6 +44,9 @@ if (string.IsNullOrWhiteSpace(jwtKey) || jwtKey.Length < 32)
 string validIssuer = builder.Configuration["Jwt:Issuer"] ?? "your-issuer";
 string validAudience = builder.Configuration["Jwt:Audience"] ?? "your-audience";
 
+
+
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -79,11 +82,22 @@ builder.Services.AddLogging(logging =>
 });
 
 // Add Custom Services
-builder.Services.AddScoped<PostService, PostService>();
-builder.Services.AddScoped<CourseService, CourseService>();
+builder.Services.AddScoped<IBlogsServices, BlogService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<UsersService, UsersService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<IContactUsService, ContactUsService>();
+builder.Services.AddScoped<IClassService, ClassService>();
+builder.Services.AddScoped<AuthService, AuthService>();
+
+
+// builder.Services.AddScoped<IService, ServiceImplementation>();
+builder.Services.AddAutoMapper(cfg =>
+{
+    cfg.AddProfile<MappingProfile>();
+});
+
 
 // Configure JSON Serialization
 builder.Services.AddControllers()
