@@ -45,8 +45,6 @@ string validIssuer = builder.Configuration["Jwt:Issuer"] ?? "your-issuer";
 string validAudience = builder.Configuration["Jwt:Audience"] ?? "your-audience";
 
 
-
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
