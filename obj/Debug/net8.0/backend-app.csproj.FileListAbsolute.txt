@@ -11,7 +11,6 @@
 /Users/user/Desktop/school-project/backend-app/obj/Debug/net8.0/backend-app.pdb
 /Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/appsettings.Development.json
 /Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/appsettings.json
-/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/azuredeploy.json
 /Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/backend-app
 /Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/Aspire.Npgsql.EntityFrameworkCore.PostgreSQL.dll
 /Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/AutoMapper.dll
