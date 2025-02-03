@@ -8,7 +8,7 @@ namespace BackendApp.Models
         public string? Password { get; set; }
         public int? Phone { get; set; }
         public string? Bio { get; set; }
-        public string? UserimgUrl { get; set; }
+        public string? UserImgUrl { get; set; }
 
         public Gender? Gender { get; set; }
 

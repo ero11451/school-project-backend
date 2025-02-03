@@ -4,16 +4,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackendApp.Services
 {
-    public class BlogService
+    public class BlogService : IBlogsServices
     {
         private readonly DataBaseContext _context;
+        private readonly IMapper _mapper;
 
-        public BlogService(DataBaseContext context)
+        public BlogService(DataBaseContext context, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
         }
 
-        public async Task<PagedResult<BlogModel>> GetPostsAsync(
+        public async Task<PagedResult<BlogModel>> GetBlogsAsync(
             int page,
             int pageSize,
             Guid? categoryId = null
@@ -39,42 +41,56 @@ namespace BackendApp.Services
             };
         }
 
-        public async Task<BlogRequestDTO> GetPostByIdAsync(Guid id)
+        public async Task<BlogModel> GetBlogByIdAsync(Guid id)
         {
             return await _context
-                ..Include(p => p)
+                .Blogs.Include(p => p)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task CreatePostAsync(CourseModel post)
+        public async Task CreateBlogAsync(BlogRequestDTO body)
         {
-            _context.Courses.Add(post);
+            var post = _mapper.Map<BlogModel>(body);
+            _context.Blogs.Add(post);
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdatePostAsync(CourseModel post)
+        public async Task<BlogModel> UpdateBlogAsync(Guid id , BlogRequestDTO body)
         {
-            _context.Courses.Update(post);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeletePostAsync(Guid id)
-        {
-            var post = await _context
-                .Courses.Include(p => p)
-                .FirstOrDefaultAsync(p => p.Id == id);
-
-            if (post == null)
+            var result = _context.Blogs.FirstOrDefaultAsync(value => value.Id == id);
+            if (result == null)
             {
                 throw new NotFoundException("Post not found.");
             }
-            _context.Courses.Remove(post);
+            var updateData =  _mapper.Map(result ,body );
+            var res = _mapper.Map<BlogModel>(body);
+            _context.Blogs.Update(res);
             await _context.SaveChangesAsync();
+            
+            return res;
         }
 
-        private bool PostExists(Guid id)
+        public async Task<BlogModel> DeleteBlogAsync(Guid id)
         {
-            return _context.Courses.Any(e => e.Id == id);
+            var res = await _context
+                .Blogs.Include(p => p)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (res == null)
+            {
+                throw new NotFoundException("Blog not found.");
+            }
+            _context.Blogs.Remove(res);
+            await _context.SaveChangesAsync();
+            return res;
         }
+    }
+
+    public interface IBlogsServices {
+        Task<PagedResult<BlogModel>> GetBlogsAsync(int page, int pageSize, Guid? categoryId = null);
+        Task<BlogModel> GetBlogByIdAsync(Guid id);
+        Task CreateBlogAsync(BlogRequestDTO post);
+        Task<BlogModel>  UpdateBlogAsync(Guid id,  BlogRequestDTO body);
+        Task<BlogModel> DeleteBlogAsync(Guid id);
     }
 }

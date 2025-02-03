@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using BackendApp.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,30 +13,50 @@ namespace BackendApp.Controllers
             _blogService = blogService;
         }
         [HttpGet]
-        public ActionResult<IEnumerable<string>> Get()
+        public async Task<ActionResult> Get(int page= 1, int pageSize = 10, Guid? categoryId = null)
         {
-            return new string[] { "value1", "value2" };
+             var result =  await _blogService.GetBlogsAsync(page, pageSize, categoryId);
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
-        public ActionResult<string> Get(int id)
+        public async Task<ActionResult> Get(Guid id)
         {
-            return "value";
+            var blog = await _blogService.GetBlogByIdAsync(id);
+            return Ok(blog);
         }
 
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult> Post([FromBody] BlogRequestDTO body)
         {
+           var result = _blogService.CreateBlogAsync(body);
+            return Ok(result);
         }
 
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult> Put(Guid id, [FromBody] BlogRequestDTO value)
         {
+            var response = await _blogService.UpdateBlogAsync(id, value);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+            
+            return  Ok(response);
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<ActionResult> Delete(Guid id)
         {
+            var response = await _blogService.DeleteBlogAsync(id);
+
+            if (response == null)
+            {
+                return NotFound();
+            }
+
+            return Ok("Deleted Successfully");
         }
     }
 }

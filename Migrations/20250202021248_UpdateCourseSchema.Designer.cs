@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace backend_app.Migrations
 {
     [DbContext(typeof(DataBaseContext))]
-    [Migration("20250113205812_InikktialCreatejjjAddedTheNEfW")]
-    partial class InikktialCreatejjjAddedTheNEfW
+    [Migration("20250202021248_UpdateCourseSchema")]
+    partial class UpdateCourseSchema
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,67 @@ namespace backend_app.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("BackendApp.Models.BlogCategoryModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ImgUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlogCategories");
+                });
+
+            modelBuilder.Entity("BackendApp.Models.BlogModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("imgUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("summary")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("videoUrl")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Blogs");
+                });
 
             modelBuilder.Entity("BackendApp.Models.CategoryModel", b =>
                 {
@@ -82,23 +143,10 @@ namespace backend_app.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("InstructorId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("InstructorId1")
-                        .HasColumnType("varchar(255)");
-
                     b.Property<int>("MaxStudents")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ScheduleDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<TimeSpan>("ScheduleTime")
-                        .HasColumnType("time(6)");
-
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Summary")
@@ -116,8 +164,6 @@ namespace backend_app.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
-
-                    b.HasIndex("InstructorId1");
 
                     b.ToTable("Classes");
                 });
@@ -176,7 +222,6 @@ namespace backend_app.Migrations
                         .HasColumnType("longtext");
 
                     b.Property<string>("Status")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("ThumbnailUrl")
@@ -191,45 +236,7 @@ namespace backend_app.Migrations
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("BackendApp.Models.Enrollment", b =>
-                {
-                    b.Property<Guid>("EnrollmentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid?>("ClassModelId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("CourseId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("EnrollmentDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<decimal?>("Grade")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.Property<bool>("IsCompleted")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("EnrollmentId");
-
-                    b.HasIndex("ClassModelId");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("UserId1");
-
-                    b.ToTable("Enrollments");
-                });
-
-            modelBuilder.Entity("BackendApp.Models.Test", b =>
+            modelBuilder.Entity("BackendApp.Models.TestModel", b =>
                 {
                     b.Property<Guid>("TestId")
                         .ValueGeneratedOnAdd()
@@ -246,10 +253,10 @@ namespace backend_app.Migrations
 
                     b.HasIndex("ClassId");
 
-                    b.ToTable("Test");
+                    b.ToTable("Tests");
                 });
 
-            modelBuilder.Entity("BackendApp.Models.TestOption", b =>
+            modelBuilder.Entity("BackendApp.Models.TestOptionModel", b =>
                 {
                     b.Property<Guid>("OptionId")
                         .ValueGeneratedOnAdd()
@@ -335,15 +342,15 @@ namespace backend_app.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("UserImgUrl")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
                     b.Property<int?>("UserType")
                         .HasColumnType("int");
-
-                    b.Property<string>("UserImgUrl")
-                        .HasColumnType("longtext");
 
                     b.Property<string>("user_name")
                         .HasColumnType("longtext");
@@ -492,6 +499,16 @@ namespace backend_app.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BackendApp.Models.BlogModel", b =>
+                {
+                    b.HasOne("BackendApp.Models.BlogCategoryModel", "Category")
+                        .WithMany("Blogs")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("BackendApp.Models.ClassModel", b =>
                 {
                     b.HasOne("BackendApp.Models.CourseModel", "Course")
@@ -500,13 +517,7 @@ namespace backend_app.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BackendApp.Models.UserModel", "Instructor")
-                        .WithMany()
-                        .HasForeignKey("InstructorId1");
-
                     b.Navigation("Course");
-
-                    b.Navigation("Instructor");
                 });
 
             modelBuilder.Entity("BackendApp.Models.CourseModel", b =>
@@ -528,28 +539,7 @@ namespace backend_app.Migrations
                     b.Navigation("Creator");
                 });
 
-            modelBuilder.Entity("BackendApp.Models.Enrollment", b =>
-                {
-                    b.HasOne("BackendApp.Models.ClassModel", null)
-                        .WithMany("Enrollments")
-                        .HasForeignKey("ClassModelId");
-
-                    b.HasOne("BackendApp.Models.CourseModel", "Course")
-                        .WithMany("Enrollment")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BackendApp.Models.UserModel", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId1");
-
-                    b.Navigation("Course");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("BackendApp.Models.Test", b =>
+            modelBuilder.Entity("BackendApp.Models.TestModel", b =>
                 {
                     b.HasOne("BackendApp.Models.ClassModel", "Class")
                         .WithMany("Tests")
@@ -560,9 +550,9 @@ namespace backend_app.Migrations
                     b.Navigation("Class");
                 });
 
-            modelBuilder.Entity("BackendApp.Models.TestOption", b =>
+            modelBuilder.Entity("BackendApp.Models.TestOptionModel", b =>
                 {
-                    b.HasOne("BackendApp.Models.Test", "Test")
+                    b.HasOne("BackendApp.Models.TestModel", "Test")
                         .WithMany("Options")
                         .HasForeignKey("TestId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -622,6 +612,11 @@ namespace backend_app.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BackendApp.Models.BlogCategoryModel", b =>
+                {
+                    b.Navigation("Blogs");
+                });
+
             modelBuilder.Entity("BackendApp.Models.CategoryModel", b =>
                 {
                     b.Navigation("Courses");
@@ -629,19 +624,15 @@ namespace backend_app.Migrations
 
             modelBuilder.Entity("BackendApp.Models.ClassModel", b =>
                 {
-                    b.Navigation("Enrollments");
-
                     b.Navigation("Tests");
                 });
 
             modelBuilder.Entity("BackendApp.Models.CourseModel", b =>
                 {
                     b.Navigation("Classes");
-
-                    b.Navigation("Enrollment");
                 });
 
-            modelBuilder.Entity("BackendApp.Models.Test", b =>
+            modelBuilder.Entity("BackendApp.Models.TestModel", b =>
                 {
                     b.Navigation("Options");
                 });

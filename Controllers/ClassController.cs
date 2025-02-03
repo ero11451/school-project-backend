@@ -2,6 +2,8 @@ using System;
 using Microsoft.AspNetCore.Mvc;
 using BackendApp.Models;
 using BackendApp.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace BackendApp.Controllers
 {
@@ -17,10 +19,12 @@ namespace BackendApp.Controllers
         }
 
         // GET: api/class
+     
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] 
         [HttpGet]
-        public  async Task<IActionResult> GetAllClasses( [FromQuery] int pageNumber = 1, [FromQuery]int pageSize = 10)
+        public  async Task<IActionResult> GetAllClasses( [FromQuery] int pageNumber = 1, [FromQuery]int pageSize = 100, Guid? courseId = null)
         {
-            var classes = await  _classService.GetAllClassesAsync(pageNumber,  pageSize);
+            var classes = await  _classService.GetAllClassesAsync(pageNumber,  pageSize, courseId);
             return Ok(classes);
         }
 
@@ -35,6 +39,8 @@ namespace BackendApp.Controllers
         }
 
         // POST: api/class
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] 
         [HttpPost]
         public async Task<IActionResult> CreateClass([FromBody] ClassRequest classModel)
         {

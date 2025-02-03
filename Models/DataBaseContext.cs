@@ -16,6 +16,9 @@ namespace BackendApp.Models
         public DbSet<ContactModel> ContactsUs { get; set; } // Renamed for better clarity
         public DbSet<ClassModel> Classes { get; set; }
 
+        public DbSet<BlogModel> Blogs { get; set; }
+        public DbSet<BlogCategoryModel> BlogCategories { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -56,6 +59,13 @@ namespace BackendApp.Models
                 .WithMany(u => u.Courses)
                 .HasForeignKey(c => c.CreatorId)
                 .OnDelete(DeleteBehavior.Restrict); // Prevent deletion of users with courses
+
+            // Many-to-One: Blog -> BlogCategory
+            modelBuilder.Entity<BlogModel>()
+                .HasOne(b => b.Category)
+                .WithMany(bc => bc.Blogs)
+                .HasForeignKey(b => b.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull); // Remove category reference when category is deleted
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

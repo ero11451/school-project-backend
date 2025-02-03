@@ -22,6 +22,67 @@ namespace backend_app.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("BackendApp.Models.BlogCategoryModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ImgUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BlogCategories");
+                });
+
+            modelBuilder.Entity("BackendApp.Models.BlogModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("content")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("imgUrl")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("summary")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("videoUrl")
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Blogs");
+                });
+
             modelBuilder.Entity("BackendApp.Models.CategoryModel", b =>
                 {
                     b.Property<Guid>("Id")
@@ -278,15 +339,15 @@ namespace backend_app.Migrations
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<string>("UserImgUrl")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
                     b.Property<int?>("UserType")
                         .HasColumnType("int");
-
-                    b.Property<string>("UserimgUrl")
-                        .HasColumnType("longtext");
 
                     b.Property<string>("user_name")
                         .HasColumnType("longtext");
@@ -435,6 +496,16 @@ namespace backend_app.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BackendApp.Models.BlogModel", b =>
+                {
+                    b.HasOne("BackendApp.Models.BlogCategoryModel", "Category")
+                        .WithMany("Blogs")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("BackendApp.Models.ClassModel", b =>
                 {
                     b.HasOne("BackendApp.Models.CourseModel", "Course")
@@ -536,6 +607,11 @@ namespace backend_app.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BackendApp.Models.BlogCategoryModel", b =>
+                {
+                    b.Navigation("Blogs");
                 });
 
             modelBuilder.Entity("BackendApp.Models.CategoryModel", b =>

@@ -46,7 +46,7 @@ namespace backend_app.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Bio = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    UserimgUrl = table.Column<string>(type: "longtext", nullable: true)
+                    UserImgUrl = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Gender = table.Column<int>(type: "int", nullable: true),
                     UserType = table.Column<int>(type: "int", nullable: true),

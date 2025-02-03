@@ -201,7 +201,7 @@ namespace backend_app.Migrations
                     b.Property<int?>("UserType")
                         .HasColumnType("int");
 
-                    b.Property<string>("UserimgUrl")
+                    b.Property<string>("UserImgUrl")
                         .HasColumnType("longtext");
 
                     b.Property<string>("user_name")

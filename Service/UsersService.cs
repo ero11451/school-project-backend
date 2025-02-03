@@ -82,7 +82,7 @@ namespace BackendApp.Services
         }
 
         // Delete a user by their ID
-        public async Task DeleteUserAsync(string id)
+        public async Task DeleteUserAsync(Guid id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)

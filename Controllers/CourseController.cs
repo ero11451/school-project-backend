@@ -17,12 +17,16 @@ namespace BackendApp.Controllers
 
         // GET: api/course f
         [HttpGet]
-        public IActionResult GetAllCourses([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        public IActionResult GetAllCourses(
+            [FromQuery] int pageNumber = 1, 
+            [FromQuery] int pageSize = 10, 
+            Guid? categoryId = null, 
+            string? sort = null)
         {
             if (pageNumber < 1 || pageSize < 1)
                 return BadRequest("Page number and page size must be greater than 0.");
 
-            var courses = _courseService.GetAllCourses(pageNumber, pageSize);
+            var courses = _courseService.GetAllCourses(pageNumber, pageSize, categoryId, sort);
             return Ok(courses);
         }
 

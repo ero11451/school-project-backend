@@ -16,11 +16,18 @@ namespace BackendApp.Services
             _mapper = mapper;
         }
 
-        public async Task<PagedResult<ClassModel>> GetAllClassesAsync(int pageNumber, int pageSize)
+        public async Task<PagedResult<ClassModel>> GetAllClassesAsync(int pageNumber, int pageSize = 100, Guid? courseId = null)
         {
             var query = _context.Classes.AsQueryable();
             var totalCount = await query.CountAsync();
-            var data = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            if (courseId.HasValue)
+            {
+                query = query.Where(c => c.CourseId == courseId.Value);
+            }
+            var data = await query.Skip((pageNumber - 1) * pageSize)
+            .Include(classes => classes.Tests)
+            .ThenInclude(tests => tests.Options)
+            .Take(pageSize).ToListAsync();
 
             return new PagedResult<ClassModel>
             {
@@ -100,7 +107,7 @@ namespace BackendApp.Services
 
     public interface IClassService
     {
-        Task<PagedResult<ClassModel>> GetAllClassesAsync(int pageNumber, int pageSize);
+        Task<PagedResult<ClassModel>> GetAllClassesAsync(int pageNumber, int pageSize , Guid? courseId);
         Task<ClassResponse?> GetClassByIdAsync(Guid id);
         Task<ClassModel> CreateClassAsync(ClassRequest classRequest);
         Task<ClassResponse?> UpdateClassAsync(Guid id, ClassRequest updatedClass);

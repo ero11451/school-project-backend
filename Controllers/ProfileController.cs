@@ -16,7 +16,7 @@ public class ProfileController : ControllerBase
         _userManager = userManager;
     }
 
-    [Authorize = JwtBearerDefaults.AuthenticationScheme] 
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)] 
     [HttpGet]
     public async Task<IActionResult> GetProfile()
     {
