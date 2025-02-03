@@ -106,17 +106,33 @@ builder.Services.AddControllers()
     });
 
 // Configure DbContext with MySQL
-string? connectionString = builder.Configuration.GetConnectionString("DevConnection");
+string? connectionString = builder.Configuration.GetConnectionString("ProdConnection");
 if (string.IsNullOrEmpty(connectionString))
 {
     throw new InvalidOperationException("Database connection string is missing or empty.");
 }
 
+
 builder.Services.AddDbContext<DataBaseContext>(options =>
-    options.UseMySql(
-        connectionString,
-        new MySqlServerVersion(new Version(8, 0, 36))
-    ));
+    options.UseSqlServer(connectionString, sqlServerOptions =>
+    {
+        sqlServerOptions.EnableRetryOnFailure(
+            maxRetryCount: 5, 
+            maxRetryDelay: TimeSpan.FromSeconds(5), 
+            errorNumbersToAdd: null
+        );
+    }));
+
+
+// builder.Services.AddDbContext<DataBaseContext>(options =>
+//     options.UseMySql(
+//         connectionString,
+//         new MySqlServerVersion(new Version(8, 0, 36)),
+//         mySqlOptions =>
+//         {
+//             mySqlOptions.EnableRetryOnFailure();
+//         }
+//     ));
 
 var app = builder.Build();
 

@@ -176,3 +176,9 @@
 /Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/backend-app.staticwebassets.endpoints.json
 /Users/user/Desktop/school-project/backend-app/obj/Debug/net8.0/staticwebassets.build.endpoints.json
 /Users/user/Desktop/school-project/backend-app/obj/Debug/net8.0/staticwebassets/msbuild.backend-app.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/publish/web.config
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/publish/appsettings.Development.json
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/publish/appsettings.json
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/publish/backend-app.deps.json
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/publish/backend-app.runtimeconfig.json
+/Users/user/Desktop/school-project/backend-app/bin/Debug/net8.0/publish/backend-app.staticwebassets.endpoints.json

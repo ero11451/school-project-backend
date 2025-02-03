@@ -8,7 +8,6 @@ namespace BackendApp.Models
         public Guid Id { get; set; } // Primary key for the course
 
         [Required]
-        [MaxLength(200)]
         public string CourseName { get; set; } // Name of the course
 
         [Required]

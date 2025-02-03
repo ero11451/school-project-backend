@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace BackendApp.Models
 {
@@ -24,6 +25,9 @@ namespace BackendApp.Models
             base.OnModelCreating(modelBuilder);
 
             // Define relationships and constraints
+            modelBuilder.Entity<IdentityRole>()
+            .Property(r => r.ConcurrencyStamp)
+            .HasColumnType("nvarchar(max)"); // Replace longtext with nvarchar(max)
 
             // One-to-Many: Category -> Courses
             modelBuilder.Entity<CategoryModel>()
